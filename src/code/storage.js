@@ -7,11 +7,13 @@ import platform from './platform'
  * In renderer process: store or this.store
  */
 
+// Add all global data here
 let data = {
   current: null,
   projects: []
 }
 
+// Logic
 let store
 let reactiveData
 let electron
@@ -32,12 +34,15 @@ if (!(process && process.type && process.type === 'renderer')) {
     created() {
       Object.keys(data).forEach(key => {
         this.getStorage(key)
-        this.$watch(key, (val) => {
-          if (val) val = JSON.stringify(val)
-          store.setItem(key, val)
-          electron.webContents.getAllWebContents().forEach(wc => {
-            wc.send('updated-' + key)
-          })
+        this.$watch(key, {
+          deep: true,
+          handler(val) {
+            if (val) val = JSON.stringify(val)
+            store.setItem(key, val)
+            electron.webContents.getAllWebContents().forEach(wc => {
+              wc.send('updated-' + key)
+            })
+          }
         })
       })
     },
@@ -57,8 +62,11 @@ if (!(process && process.type && process.type === 'renderer')) {
     created() {
       Object.keys(data).forEach(key => {
         this.getStorage(key)
-        this.$watch(key, () => {
-          globStore[key] = this[key]
+        this.$watch(key, {
+          deep: true,
+          handler() {
+            globStore[key] = this[key]
+          }
         })
         electron.ipcRenderer.on('updated-' + key, () => {
           this.getStorage(key)

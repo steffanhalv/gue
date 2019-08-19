@@ -8,7 +8,18 @@ export default (store) => {
         label: project.path,
         role: 'project',
         click() {
-          console.log(project.path)
+          let obj = project
+          let idx = (store.projects.length - 1)
+          for (let i = (store.projects.length - 1); i >= 0; i--) {
+            if (store.projects[i].path === obj.path) {
+              obj = store.projects[i]
+              idx = i
+            }
+          }
+          if (idx <= 30) store.projects.splice(idx, 1)
+          store.projects.unshift(obj)
+          store.current = store.projects[0]
+          while (store.projects.length > 30) store.projects.pop()
         }
       })
     })
@@ -17,21 +28,6 @@ export default (store) => {
         label: app.getName(),
         submenu: [
           {
-            label: 'New project',
-            role: 'new',
-            click() {
-              dialog.showOpenDialog({
-                properties: ['openDirectory']
-              }).then(results => {
-                if (results.filePaths.length && !results.canceled) {
-                  store.projects.push({
-                    path: results.filePaths[0]
-                  })
-                }
-              }).catch(() => {})
-            }
-          },
-          {
             label: 'Open...',
             role: 'open' ,
             click() {
@@ -39,9 +35,18 @@ export default (store) => {
                 properties: ['openDirectory']
               }).then(results => {
                 if (results.filePaths.length && !results.canceled) {
-                  store.projects.push({
-                    path: results.filePaths[0]
-                  })
+                  let obj = { path: results.filePaths[0] }
+                  let idx = (store.projects.length - 1)
+                  for (let i = (store.projects.length - 1); i >= 0; i--) {
+                    if (store.projects[i].path === obj.path) {
+                      obj = store.projects[i]
+                      idx = i
+                    }
+                  }
+                  if (idx <= 30) store.projects.splice(idx, 1)
+                  store.projects.unshift(obj)
+                  store.current = store.projects[0]
+                  while (store.projects.length > 30) store.projects.pop()
                 }
               }).catch(() => {})
             }
