@@ -22,9 +22,9 @@ export default {
 
 <style scoped>
   label {
-    border-top: 5px solid #333;
+    border-top: 5px solid #4c4c4c;
     color: #eee;
-    padding: 2px;
+    padding: 4px;
     display: inline-block;
     width: 100%;
   }
@@ -43,7 +43,7 @@ export default {
     background-color: #444;
     cursor: pointer;
     width: 100%;
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid #3b3b3b;
   }
   .styles > div > div:hover {
     color: #c5c5c5;

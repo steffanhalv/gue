@@ -16,6 +16,10 @@
     "@babel/plugin-transform-runtime": "^7.5.5",
     "core-js": "^2.6.5",
     "electron-store": "^4.0.0",
+    "i": "^0.3.6",
+    "interactjs": "^1.4.0-rc.13",
+    "js-beautify": "^1.10.2",
+    "npm": "^6.11.1",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3"
   },

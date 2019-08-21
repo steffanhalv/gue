@@ -1,13 +1,13 @@
 <template>
-  <div class="shell">
+  <div class="shell" id="shell">
     <div class="topbar">
       {{ store.current.path }} | {{ store.current.file }}
     </div>
-    <div v-if="file" class="playground">
-      <component v-if="component" :is="component"></component>
+    <div v-if="file" class="playground" id="playground">
+      <component @select_in_gue="select" v-if="component" :is="component"></component>
       <component :is="'style'" v-html="style"></component>
     </div>
-    <div class="toolbar">
+    <div class="toolbar" id="toolbar">
       <styling class="toolbar__styling"/>
       <explorer class="toolbar__explorer"/>
     </div>
@@ -19,6 +19,7 @@ import fs from 'fs'
 import parser from '../code/parse_vue'
 import Styling from '@/components/Styling'
 import Explorer from '@/components/Explorer'
+import interact from 'interactjs'
 export default {
   components: {
     Styling,
@@ -39,6 +40,34 @@ export default {
   mounted() {
     this.parseVue()
     this.getFiles()
+    interact('.toolbar')
+    .resizable({
+      edges: { left: true, right: false, bottom: false, top: false },
+      modifiers: [
+        interact.modifiers.restrictEdges({
+          outer: 'parent',
+          endOnly: true
+        }),
+        interact.modifiers.restrictSize({
+          min: { width: 5 },
+          max: { width: 900 }
+        })
+      ],
+      inertia: true
+    })
+    .on('resizemove', function (event) {
+      var target = event.target
+      var x = (parseFloat(target.getAttribute('data-x')) || 0)
+      target.style.width = event.rect.width + 'px'
+      x += event.deltaRect.right
+      target.setAttribute('data-x', x)
+      document.getElementById('playground').style.width =
+        document.getElementById('shell').offsetWidth - event.rect.width + 'px'
+    })
+    window.addEventListener('resize', () => {
+      document.getElementById('playground').style.width =
+        document.getElementById('shell').offsetWidth - document.getElementById('toolbar').offsetWidth + 'px'
+    })
   },
   watch: {
     'store.current.path'() {
@@ -46,6 +75,11 @@ export default {
     }
   },
   methods: {
+    select(e) {
+      /* eslint-disable */
+      console.log('yup', JSON.parse(e.target.getAttribute('data-original')))
+      /* eslint-enable */
+    },
     parseVue() {
       if (this.store.current && this.store.current.path && this.store.current.file) {
         let path = this.store.current.path + '/' + this.store.current.file
@@ -87,23 +121,37 @@ export default {
   bottom: 0;
 }
 .playground {
+  position: absolute;
+  bottom: 0;
   float: left;
   width: calc(100% - 230px);
   height: calc(100% - 40px);
 }
 .toolbar {
-  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
   width: 230px;
   height: calc(100% - 40px);
+  box-sizing: border-box;
+  touch-action: none;
 }
 .topbar {
+  position: absolute;
+  top: 0;
   width: 100%;
   height: 40px;
+  background-color: #555;
+  color: #eee;
 }
 .toolbar__styling {
   height: 60%;
 }
 .toolbar__explorer {
   height: 40%;
+}
+.playground *:hover {
+  background: blue!important;
+  color:red;
 }
 </style>
