@@ -54,7 +54,7 @@ export default (store) => {
         ]
       },
       {
-        label: 'Projects',
+        label: 'Recent',
         submenu: projects
       }
     ])
