@@ -1,4 +1,5 @@
 import { app, dialog, Menu } from 'electron'
+import projectModel from '../models/project'
 
 export default (store) => {
   let buildTemplate = () => {
@@ -12,12 +13,12 @@ export default (store) => {
           let idx = (store.projects.length - 1)
           for (let i = (store.projects.length - 1); i >= 0; i--) {
             if (store.projects[i].path === obj.path) {
-              obj = store.projects[i]
+              obj = Object.assign(store.projects[i], obj)
               idx = i
             }
           }
           if (idx <= 30) store.projects.splice(idx, 1)
-          store.projects.unshift(obj)
+          store.projects.unshift(Object.assign(projectModel, obj))
           store.current = store.projects[0]
           while (store.projects.length > 30) store.projects.pop()
         }
@@ -39,12 +40,12 @@ export default (store) => {
                   let idx = (store.projects.length - 1)
                   for (let i = (store.projects.length - 1); i >= 0; i--) {
                     if (store.projects[i].path === obj.path) {
-                      obj = store.projects[i]
+                      obj = Object.assign(store.projects[i], obj)
                       idx = i
                     }
                   }
                   if (idx <= 30) store.projects.splice(idx, 1)
-                  store.projects.unshift(obj)
+                  store.projects.unshift(Object.assign(projectModel, obj))
                   store.current = store.projects[0]
                   while (store.projects.length > 30) store.projects.pop()
                 }
