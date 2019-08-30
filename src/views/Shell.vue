@@ -3,13 +3,19 @@
     <div class="topbar">
       {{ store.current.path }} | {{ store.current.file }}
     </div>
-    <div v-if="file" class="playground" id="playground">
-      <component @select_in_gue="select" v-if="component" :is="component"></component>
-      <component :is="'style'" v-html="style"></component>
+    <div class="playground" id="playground">
+      <div v-if="file" style="position: absolute; width: 100%; height: 100%; overflow: auto">
+        <component
+          @select_in_gue="select"
+          v-if="component"
+          :is="component"
+        ></component>
+        <component :is="'style'" v-html="style"></component>
+      </div>
     </div>
     <div class="toolbar" id="toolbar">
-      <styling class="toolbar__styling"/>
-      <explorer class="toolbar__explorer"/>
+      <styling class="toolbar__styling" />
+      <explorer class="toolbar__explorer" />
     </div>
   </div>
 </template>
@@ -29,7 +35,8 @@ export default {
     return {
       component: null,
       style: '',
-      file: null
+      file: null,
+      src: ''
     }
   },
   created() {
@@ -41,32 +48,34 @@ export default {
     this.parseVue()
     this.getFiles()
     interact('.toolbar')
-    .resizable({
-      edges: { left: true, right: false, bottom: false, top: false },
-      modifiers: [
-        interact.modifiers.restrictEdges({
-          outer: 'parent',
-          endOnly: true
-        }),
-        interact.modifiers.restrictSize({
-          min: { width: 5 },
-          max: { width: 900 }
-        })
-      ],
-      inertia: true
-    })
-    .on('resizemove', function (event) {
-      var target = event.target
-      var x = (parseFloat(target.getAttribute('data-x')) || 0)
-      target.style.width = event.rect.width + 'px'
-      x += event.deltaRect.right
-      target.setAttribute('data-x', x)
-      document.getElementById('playground').style.width =
-        document.getElementById('shell').offsetWidth - event.rect.width + 'px'
-    })
+      .resizable({
+        edges: { left: true, right: false, bottom: false, top: false },
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: 'parent',
+            endOnly: true
+          }),
+          interact.modifiers.restrictSize({
+            min: { width: 5 },
+            max: { width: 900 }
+          })
+        ],
+        inertia: true
+      })
+      .on('resizemove', function(event) {
+        var target = event.target
+        var x = parseFloat(target.getAttribute('data-x')) || 0
+        target.style.width = event.rect.width + 'px'
+        x += event.deltaRect.right
+        target.setAttribute('data-x', x)
+        document.getElementById('playground').style.width =
+          document.getElementById('shell').offsetWidth - event.rect.width + 'px'
+      })
     window.addEventListener('resize', () => {
       document.getElementById('playground').style.width =
-        document.getElementById('shell').offsetWidth - document.getElementById('toolbar').offsetWidth + 'px'
+        document.getElementById('shell').offsetWidth -
+        document.getElementById('toolbar').offsetWidth +
+        'px'
     })
   },
   watch: {
@@ -81,14 +90,23 @@ export default {
       /* eslint-enable */
     },
     parseVue() {
-      if (this.store.current && this.store.current.path && this.store.current.file) {
-        let path = this.store.current.path + '/' + this.store.current.file
+      if (
+        this.store.current &&
+        this.store.current.path &&
+        this.store.current.file
+      ) {
+        let path =
+          this.store.current.path + this.src + '/' + this.store.current.file
         let ext = this.store.current.file.split('.').pop()
-        if (fs.existsSync(path) && fs.lstatSync(path).isFile() && ext === 'vue') {
+        if (
+          fs.existsSync(path) &&
+          fs.lstatSync(path).isFile() &&
+          ext === 'vue'
+        ) {
           let file = fs.readFileSync(path, { encoding: 'utf8' })
           if (file !== this.file) {
             this.file = file
-            let parsed = parser(file)
+            let parsed = parser(file, this.store.current.path, this.src)
             this.component = parsed.component
             this.style = parsed.style
           }
@@ -101,9 +119,14 @@ export default {
     },
     getFiles() {
       if (this.store.current && this.store.current.path) {
-        fs.readdir(this.store.current.path, (err, files) => {
+        let path = this.store.current.path
+        if (fs.existsSync(path + '/src')) this.src = '/src'
+        else this.src = ''
+        fs.readdir(path + this.src, (err, files) => {
           this.store.current.files = files
-          this.store.current.file = files[0]
+          if (files) {
+            this.store.current.file = files[0]
+          }
           this.file = null
         })
       }
@@ -151,7 +174,9 @@ export default {
   height: 40%;
 }
 .playground *:hover {
-  background: blue!important;
-  color:red;
+  /*
+  background: blue !important;
+  color: red;
+  */
 }
 </style>

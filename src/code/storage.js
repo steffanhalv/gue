@@ -22,15 +22,21 @@ if (platform().electron) {
   let storage = new Store()
   electron = require('electron')
   store = {
-    getItem(val) { return storage.get(val) },
-    setItem(val1, val2) { return storage.set(val1, val2) }
+    getItem(val) {
+      return storage.get(val)
+    },
+    setItem(val1, val2) {
+      return storage.set(val1, val2)
+    }
   }
 } else {
   store = localStorage
 }
 if (!(process && process.type && process.type === 'renderer')) {
   reactiveData = new Vue({
-    data() { return data },
+    data() {
+      return data
+    },
     created() {
       Object.keys(data).forEach(key => {
         this.getStorage(key)
@@ -58,7 +64,9 @@ if (!(process && process.type && process.type === 'renderer')) {
 } else {
   let globStore = electron.remote.getGlobal('store')
   reactiveData = new Vue({
-    data() { return data },
+    data() {
+      return data
+    },
     created() {
       Object.keys(data).forEach(key => {
         this.getStorage(key)

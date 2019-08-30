@@ -1,7 +1,7 @@
 import { app, dialog, Menu } from 'electron'
 import projectModel from '../models/project'
 
-export default (store) => {
+export default store => {
   let buildTemplate = () => {
     let projects = []
     store.projects.forEach(project => {
@@ -10,8 +10,8 @@ export default (store) => {
         role: 'project',
         click() {
           let obj = project
-          let idx = (store.projects.length - 1)
-          for (let i = (store.projects.length - 1); i >= 0; i--) {
+          let idx = store.projects.length - 1
+          for (let i = store.projects.length - 1; i >= 0; i--) {
             if (store.projects[i].path === obj.path) {
               obj = Object.assign(store.projects[i], obj)
               idx = i
@@ -30,26 +30,29 @@ export default (store) => {
         submenu: [
           {
             label: 'Open...',
-            role: 'open' ,
+            role: 'open',
             click() {
-              dialog.showOpenDialog({
-                properties: ['openDirectory']
-              }).then(results => {
-                if (results.filePaths.length && !results.canceled) {
-                  let obj = { path: results.filePaths[0] }
-                  let idx = (store.projects.length - 1)
-                  for (let i = (store.projects.length - 1); i >= 0; i--) {
-                    if (store.projects[i].path === obj.path) {
-                      obj = Object.assign(store.projects[i], obj)
-                      idx = i
+              dialog
+                .showOpenDialog({
+                  properties: ['openDirectory']
+                })
+                .then(results => {
+                  if (results.filePaths.length && !results.canceled) {
+                    let obj = { path: results.filePaths[0] }
+                    let idx = store.projects.length - 1
+                    for (let i = store.projects.length - 1; i >= 0; i--) {
+                      if (store.projects[i].path === obj.path) {
+                        obj = Object.assign(store.projects[i], obj)
+                        idx = i
+                      }
                     }
+                    if (idx <= 30) store.projects.splice(idx, 1)
+                    store.projects.unshift(Object.assign(projectModel, obj))
+                    store.current = store.projects[0]
+                    while (store.projects.length > 30) store.projects.pop()
                   }
-                  if (idx <= 30) store.projects.splice(idx, 1)
-                  store.projects.unshift(Object.assign(projectModel, obj))
-                  store.current = store.projects[0]
-                  while (store.projects.length > 30) store.projects.pop()
-                }
-              }).catch(() => {})
+                })
+                .catch(() => {})
             }
           }
         ]
