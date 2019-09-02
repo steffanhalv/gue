@@ -2,16 +2,36 @@ import beautify from 'js-beautify'
 export default (file = '', path = '', src = '') => {
   if (file) {
     file = file.replace('import Animation from \'@/components/Animation\'', `const Animation = {
-      props: ['motion'],
+      props: ['motion', 'tag'],
       template: \`
-        <div :key="motion.key + '-' + motion.progress" :style="motion.current">
+        <component
+          style="position: absolute"
+          :is="tag"
+          :key="motion.key + '-' + motion.progress"
+          :style="motion.current">
           <slot/>
-        </div>
+        </component>
       \`
     }`)
     let template = file.substring(
       file.indexOf('<template>') + '<template>'.length,
       file.indexOf('</template>')
+    )
+    template = template.replace(
+      /:src="require\('@/g,
+      'src="~@'
+    )
+    template = template.replace(
+      /\.jpg'\)/g,
+      '.jpg'
+    )
+    template = template.replace(
+      /\.png'\)/g,
+      '.png'
+    )
+    template = template.replace(
+      /\.svg'\)/g,
+      '.svg'
     )
     let component = file.substring(
       file.indexOf('<script>') + '<script>'.length,
