@@ -136,6 +136,33 @@ export default {
 }
 </script>
 
+<style>
+.window #app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.window #app > * {
+  width: 0;
+  left: 0;
+}
+.scroller {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%!important;
+  height: 100%;
+  overflow: auto;
+  z-index: 10;
+}
+.scroller .scroller-height {
+  position: absolute;
+  width: 100%;
+  height: calc(100% + 2000px);
+}
+</style>
+
 <style scoped>
 .shell {
   position: absolute;
