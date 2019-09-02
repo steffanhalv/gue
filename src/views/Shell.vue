@@ -4,7 +4,7 @@
       {{ store.current.path }} | {{ store.current.file }}
     </div>
     <div class="playground" id="playground">
-      <div v-if="file" style="position: absolute; width: 100%; height: 100%; overflow: auto">
+      <div v-if="file" class="window">
         <component
           @select_in_gue="select"
           v-if="component"
@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="toolbar" id="toolbar">
-      <styling class="toolbar__styling" />
+      <styling class="toolbar__styling" :selected="selected" />
       <explorer class="toolbar__explorer" />
     </div>
   </div>
@@ -33,6 +33,7 @@ export default {
   },
   data() {
     return {
+      selected: null,
       component: null,
       style: '',
       file: null,
@@ -86,7 +87,7 @@ export default {
   methods: {
     select(e) {
       /* eslint-disable */
-      console.log('yup', JSON.parse(e.target.getAttribute('data-original')))
+      this.selected = JSON.parse(e.target.getAttribute('data-original'))
       /* eslint-enable */
     },
     parseVue() {
@@ -149,6 +150,7 @@ export default {
   float: left;
   width: calc(100% - 230px);
   height: calc(100% - 40px);
+  background-color: #222;
 }
 .toolbar {
   position: absolute;
@@ -178,5 +180,14 @@ export default {
   background: blue !important;
   color: red;
   */
+}
+.window {
+  background-color: #fff;
+  position: absolute;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  left: 10px;
+  top: 10px;
+  overflow: auto;
 }
 </style>

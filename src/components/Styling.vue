@@ -1,13 +1,18 @@
 <template>
   <div class="styles">
     <label>Styles</label>
-    <div v-if="store.current">
+    <div v-if="store.current" style="color: #eee">
       <div
-        :key="element"
-        v-for="element in 10"
-        @click="store.current.element = element"
+        :key="attribute"
+        v-for="(value, attribute) in selected"
+        @click="store.current.element = selected"
       >
-        {{ element }}
+        {{ attribute }}
+        <div
+          style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
+        >
+          {{ value }}
+        </div>
       </div>
     </div>
   </div>
@@ -15,6 +20,7 @@
 
 <script>
 export default {
+  props: ['selected'],
   data() {
     return {}
   }

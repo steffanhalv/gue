@@ -27,7 +27,6 @@ export default (file = '', path = '', src = '') => {
       /require\("/g,
       'require("' + path + '/node_modules/'
     )
-    console.log(component)
     eval(component)
     if (!component.methods) component.methods = {}
     /* eslint-disable */
