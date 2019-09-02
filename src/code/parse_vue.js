@@ -1,6 +1,14 @@
 import beautify from 'js-beautify'
 export default (file = '', path = '', src = '') => {
   if (file) {
+    file = file.replace('import Animation from \'@/components/Animation\'', `const Animation = {
+      props: ['motion'],
+      template: \`
+        <div :key="motion.key + '-' + motion.progress" :style="motion.current">
+          <slot/>
+        </div>
+      \`
+    }`)
     let template = file.substring(
       file.indexOf('<template>') + '<template>'.length,
       file.indexOf('</template>')
@@ -20,13 +28,19 @@ export default (file = '', path = '', src = '') => {
       root: path
     }).code
     component = component.replace(
-      /imports-loader\?define=>false!/g,
-      'imports-loader?define=>false!' + path + '/node_modules/'
-    )
-    component = component.replace(
       /require\("/g,
       'require("' + path + '/node_modules/'
     )
+    component = component.replace(
+      /node_modules\/@/g,
+      'src'
+    )
+    /*
+    component = component.replace(
+      /_interopRequireDefault\(require/g,
+      '(await import'
+    )
+    */
     eval(component)
     if (!component.methods) component.methods = {}
     /* eslint-disable */
