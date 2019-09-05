@@ -1,109 +1,211 @@
 import beautify from 'js-beautify'
-export default (file = '', path = '', src = '') => {
-  if (file) {
-    file = file.replace('import Animation from \'@/components/Animation\'', `const Animation = {
-      props: ['motion', 'tag'],
-      template: \`
-        <component
-          style="position: absolute"
-          :is="tag"
-          :key="motion.key + '-' + motion.progress"
-          :style="motion.current">
-          <slot/>
-        </component>
-      \`
-    }`)
-    let template = file.substring(
-      file.indexOf('<template>') + '<template>'.length,
-      file.indexOf('</template>')
-    )
-    template = template.replace(
-      /:src="require\('@/g,
-      'src="~@'
-    )
-    template = template.replace(
-      /\.jpg'\)/g,
-      '.jpg'
-    )
-    template = template.replace(
-      /\.png'\)/g,
-      '.png'
-    )
-    template = template.replace(
-      /\.svg'\)/g,
-      '.svg'
-    )
-    let component = file.substring(
-      file.indexOf('<script>') + '<script>'.length,
-      file.indexOf('<' + '/script>')
-    )
-    let style = file.substring(
-      file.indexOf('<style scoped>') + '<style scoped>'.length,
-      file.indexOf('</style>')
-    )
-    component = component.replace('export default', 'component =')
-    component = component.replace('module.exports', 'component =')
-    component = require('@babel/core').transform(component, {
-      presets: [require('@babel/preset-env')],
-      root: path
-    }).code
-    component = component.replace(
-      /require\("/g,
-      'require("' + path + '/node_modules/'
-    )
-    component = component.replace(
-      /node_modules\/@/g,
-      'src'
-    )
-    /*
-    component = component.replace(
-      /_interopRequireDefault\(require/g,
-      '(await import'
-    )
-    */
-    eval(component)
-    if (!component.methods) component.methods = {}
-    /* eslint-disable */
-    component.methods.select_in_gue = (e) => {
-      eval('this.$emit(\'select_in_gue\', e)')
-    }
-    /* eslint-enable */
-    // Convert back
-    let dom = document.createElement('html')
-    dom.innerHTML = template
-    dom = dom.getElementsByTagName('body')[0] // Skip html, head, body
-    // Fix
-    let tags = dom.getElementsByTagName('*')
-    Array.prototype.slice.call(tags).forEach(node => {
-      let obj = {}
-      Array.from(node.attributes).forEach(attr => {
-        obj[attr.name] = attr.value
-      })
-      if (node.hasAttribute('@click')) {
-        node.setAttribute('click-disabled', node.getAttribute('@click'))
-        node.removeAttribute('@click')
+import tosource from 'tosource'
+import fs from 'fs'
+export default (path = '') => {
+  // Convert obj to string
+  let convert = obj => {
+    return tosource(obj)
+  }
+  var loadVue = (path, main = false) => {
+    // Get content
+    let content = fs.readFileSync(path, { encoding: 'utf8' })
+    let filename = path
+      .split('\\')
+      .pop()
+      .split('/')
+      .pop()
+    path = path.replace('/' + filename, '')
+    let root = path // @todo - set from src
+    if (content) {
+      let styles = []
+      //// Get document
+      let dom = document.createElement('html')
+      dom.innerHTML = content
+
+      //// Get template
+      let templateContainer = dom.querySelector('head > template')
+      let template = templateContainer.innerHTML
+      template = template.replace(/require\('@/g, '~@')
+      template = template.replace(/\.jpg'\)/g, '.jpg')
+      template = template.replace(/\.png'\)/g, '.png')
+      template = template.replace(/\.svg'\)/g, '.svg')
+      if (main) {
+        let t = document.createElement('html')
+        t.innerHTML = template
+        t = t.getElementsByTagName('body')[0]
+        let tags = t.getElementsByTagName('*')
+        Array.prototype.slice.call(tags).forEach(node => {
+          let obj = {}
+          Array.from(node.attributes).forEach(attr => {
+            obj[attr.name] = attr.value
+          })
+          if (node.hasAttribute('@click')) {
+            node.setAttribute('click-disabled', node.getAttribute('@click'))
+            node.removeAttribute('@click')
+          }
+          node.setAttribute('click----enabled', 'select_in_gue')
+          node.setAttribute('data-original', JSON.stringify(obj))
+        })
+        let beautyHtml = beautify.html(t.innerHTML, {
+          indent_size: 2,
+          space_in_empty_paren: true
+        })
+        template = beautyHtml.replace(/click----enabled/g, '@click')
       }
-      node.setAttribute('click----enabled', 'select_in_gue')
-      node.setAttribute('data-original', JSON.stringify(obj))
-    })
-    // Convert back
-    let beautyHtml = beautify.html(dom.innerHTML, {
-      indent_size: 2,
-      space_in_empty_paren: true
-    })
-    component.template = beautyHtml.replace(/click----enabled/g, '@click')
-    component.template = component.template.replace(
-      /~@/g,
-      'file://' + path + src
-    )
-    return {
-      component,
-      style
-    }
-  } else {
-    return {
-      component: {},
-      style: ''
+      template = template.replace(/~@/g, "'file://" + path)
+      template = template.replace(/url\(' \+ 'file/g, 'url(file')
+      template = template.replace(/ \+ '\)/g, ')')
+      template = template.replace(/\.jpg"/g, '.jpg\'"')
+      template = template.replace(/\.png"/g, '.png\'"')
+      template = template.replace(/\.svg"/g, '.svg\'"')
+
+      //// Get component
+      let componentContainer = dom.querySelector('head > script')
+      let component = componentContainer.innerHTML
+      component = component.replace('export default', 'component =')
+      component = component.replace('module.exports', 'component =')
+      component = require('@babel/core').transform(component, {
+        presets: [require('@babel/preset-env')],
+        root: path
+      }).code
+      component = component.replace(/(require\(".*?"\))/g, match => {
+        match = match.replace('require("', '')
+        match = match.substring(0, match.length - 2)
+        let ext = match.split('.').pop()
+        if (match.substring(0, 1) === '@') {
+          if (
+            ext === 'vue' &&
+            fs.existsSync(root + match.substring(1)) &&
+            fs.lstatSync(root + match.substring(1)).isFile()
+          ) {
+            let comp = loadVue(root + match.substring(1))
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(root + match.substring(1)) &&
+            fs.lstatSync(root + match.substring(1)).isFile()
+          ) {
+            return 'require("' + root + match.substring(1) + '")'
+          } else if (
+            fs.existsSync(root + match.substring(1) + '.vue') &&
+            fs.lstatSync(root + match.substring(1) + '.vue').isFile()
+          ) {
+            let comp = loadVue(root + match.substring(1) + '.vue')
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(root + match.substring(1) + '.js') &&
+            fs.lstatSync(root + match.substring(1) + '.js').isFile()
+          ) {
+            return 'require("' + root + match.substring(1) + '.js' + '")'
+          } else if (
+            fs.existsSync(root + match.substring(1) + '.json') &&
+            fs.lstatSync(root + match.substring(1) + '.json').isFile()
+          ) {
+            return 'require("' + root + match.substring(1) + '.json' + '")'
+          } else {
+            return match
+          }
+        } else if (match.substring(0, 2) === './') {
+          if (
+            ext === 'vue' &&
+            fs.existsSync(path + match.substring(2)) &&
+            fs.lstatSync(path + match.substring(2)).isFile()
+          ) {
+            let comp = loadVue(path + match.substring(2))
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(path + match.substring(2)) &&
+            fs.lstatSync(path + match.substring(2)).isFile()
+          ) {
+            return 'require("' + path + match.substring(2) + '")'
+          } else if (
+            fs.existsSync(path + match.substring(2) + '.vue') &&
+            fs.lstatSync(path + match.substring(2) + '.vue').isFile()
+          ) {
+            let comp = loadVue(path + match.substring(2) + '.vue')
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(path + match.substring(2) + '.js') &&
+            fs.lstatSync(path + match.substring(2) + '.js').isFile()
+          ) {
+            return 'require("' + path + match.substring(2) + '.js' + '")'
+          } else if (
+            fs.existsSync(path + match.substring(2) + '.json') &&
+            fs.lstatSync(path + match.substring(2) + '.json').isFile()
+          ) {
+            return 'require("' + path + match.substring(2) + '.json' + '")'
+          } else {
+            return match
+          }
+        } else if (match.substring(0, 3) === '../') {
+          if (
+            ext === 'vue' &&
+            fs.existsSync(path + '/' + match) &&
+            fs.lstatSync(path + '/' + match).isFile()
+          ) {
+            let comp = loadVue(path + '/' + match)
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(path + '/' + match) &&
+            fs.lstatSync(path + '/' + match).isFile()
+          ) {
+            return 'require("' + path + '/' + match + '")'
+          } else if (
+            fs.existsSync(path + '/' + match + '.vue') &&
+            fs.lstatSync(path + '/' + match + '.vue').isFile()
+          ) {
+            let comp = loadVue(path + '/' + match + '.vue')
+            styles = styles.concat(comp.styles)
+            return convert(comp.component)
+          } else if (
+            fs.existsSync(path + '/' + match + '.js') &&
+            fs.lstatSync(path + '/' + match + '.js').isFile()
+          ) {
+            return 'require("' + path + '/' + match + '.js' + '")'
+          } else if (
+            fs.existsSync(path + '/' + match + '.json') &&
+            fs.lstatSync(path + '/' + match + '.json').isFile()
+          ) {
+            return 'require("' + path + '/' + match + '.json' + '")'
+          } else {
+            return match
+          }
+        } else {
+          return (
+            'require("' + root + '/../node_modules/' + match.substring(1) + '")'
+          )
+        }
+      })
+      eval(component)
+      if (!component.methods) component.methods = {}
+      /* eslint-disable */
+      if (main) {
+        component.methods.select_in_gue = (e) => {
+          eval('this.$emit(\'select_in_gue\', e)')
+        }
+      }
+      /* eslint-enable */
+      component.template = template
+
+      //// Get styles
+      let styleContainer = dom.querySelectorAll('head > style')
+      Array.prototype.slice.call(styleContainer).forEach(style => {
+        styles.push(style.innerHTML)
+      })
+      return {
+        component,
+        styles
+      }
+    } else {
+      return {
+        component: {},
+        styles: []
+      }
     }
   }
+  return loadVue(path, true)
 }

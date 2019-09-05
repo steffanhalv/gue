@@ -9,4 +9,4 @@ Vue.prototype.store = storage
 new Vue({
   router,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#gue')

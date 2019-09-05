@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="gue_app">
+  <div id="gue" class="gue_app">
     <router-view />
   </div>
 </template>
@@ -13,7 +13,6 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
   overflow: hidden !important;
   min-height: 0 !important;
 }

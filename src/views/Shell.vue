@@ -10,7 +10,12 @@
           v-if="component"
           :is="component"
         ></component>
-        <component :is="'style'" v-html="style"></component>
+        <component
+          :key="i"
+          v-for="(style, i) in styles"
+          :is="'style'"
+          v-html="style"
+        ></component>
       </div>
     </div>
     <div class="toolbar" id="toolbar">
@@ -35,7 +40,7 @@ export default {
     return {
       selected: null,
       component: null,
-      style: '',
+      styles: [],
       file: null,
       src: ''
     }
@@ -107,9 +112,9 @@ export default {
           let file = fs.readFileSync(path, { encoding: 'utf8' })
           if (file !== this.file) {
             this.file = file
-            let parsed = parser(file, this.store.current.path, this.src)
+            let parsed = parser(path)
             this.component = parsed.component
-            this.style = parsed.style
+            this.styles = parsed.styles
           }
         } else {
           this.file = null
@@ -135,33 +140,6 @@ export default {
   }
 }
 </script>
-
-<style>
-.window #app {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-}
-.window #app > * {
-  width: 0;
-  left: 0;
-}
-.scroller {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%!important;
-  height: 100%;
-  overflow: auto;
-  z-index: 10;
-}
-.scroller .scroller-height {
-  position: absolute;
-  width: 100%;
-  height: calc(100% + 2000px);
-}
-</style>
 
 <style scoped>
 .shell {
