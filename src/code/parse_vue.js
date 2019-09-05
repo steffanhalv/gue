@@ -15,7 +15,7 @@ export default (path = '') => {
       .split('/')
       .pop()
     path = path.replace('/' + filename, '')
-    let root = path // @todo - set from src
+    let root = path.substring(0, path.indexOf('/src')) + '/src' // @todo - set from src
     if (content) {
       let styles = []
       //// Get document

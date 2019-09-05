@@ -4,7 +4,7 @@
       {{ store.current.path }} | {{ store.current.file }}
     </div>
     <div class="playground" id="playground">
-      <div v-if="file" class="window">
+      <div v-if="file" class="window" id="window">
         <component
           @select_in_gue="select"
           v-if="component"
