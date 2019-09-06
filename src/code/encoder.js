@@ -39,11 +39,16 @@ export default (path, component, style) => {
   t = t.getElementsByTagName('body')[0]
   let tags = t.getElementsByTagName('*')
   Array.prototype.slice.call(tags).forEach(node => {
-    let obj = {}
-    Array.from(node.attributes).forEach(attr => {
-      obj[attr.name] = attr.value
-    })
     node.removeAttribute('@click')
+    let oldAttributes = JSON.parse(node.getAttribute('data-original'))
+    Object.keys(oldAttributes).forEach(attr => {
+      if (attr.charAt(0) === '@') {
+        node.setAttribute('gui-' + attr.substring(1), oldAttributes[attr])
+        node.removeAttribute(attr)
+      } else {
+        node.setAttribute(attr, oldAttributes[attr])
+      }
+    })
     node.removeAttribute('data-original')
   })
   let beautyHtml = beautify.html(t.innerHTML, {
@@ -51,6 +56,7 @@ export default (path, component, style) => {
     space_in_empty_paren: true
   })
   template = beautyHtml.replace(/click-disabled/g, '@click')
+  template = beautyHtml.replace(/gui-/g, '@')
 
   template = template.replace(/\.jpg'"/g, '.jpg\')"')
   template = template.replace(/\.png'"/g, '.png\')"')
