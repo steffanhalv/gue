@@ -34,14 +34,15 @@ export default (path = '') => {
         let t = document.createElement('html')
         t.innerHTML = template
         t = t.getElementsByTagName('body')[0]
+        let i = 0
         let tags = t.getElementsByTagName('*')
         Array.prototype.slice.call(tags).forEach(node => {
+          node.setAttribute('data-identifier', i++)
           let obj = {}
           Array.from(node.attributes).forEach(attr => {
             obj[attr.name] = attr.value
           })
           if (node.hasAttribute('@click')) {
-            node.setAttribute('click-disabled', node.getAttribute('@click'))
             node.removeAttribute('@click')
           }
           node.setAttribute('click----enabled', 'select_in_gue')

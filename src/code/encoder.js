@@ -50,6 +50,8 @@ export default (path, component, style) => {
       }
     })
     node.removeAttribute('data-original')
+    node.removeAttribute('data-identifier')
+    delete node.dataset.identifier
   })
   let beautyHtml = beautify.html(t.innerHTML, {
     indent_size: 2,
@@ -64,6 +66,9 @@ export default (path, component, style) => {
   template = template.replace(/\.jpg\)'"/g, ".jpg') + ')'\"")
   template = template.replace(/\.png\)'"/g, ".png') + ')'\"")
   template = template.replace(/\.svg\)'"/g, ".svg') + ')'\"")
+  template = template.replace(/\.jpg"/g, '.jpg\')"')
+  template = template.replace(/\.png"/g, '.png\')"')
+  template = template.replace(/\.svg"/g, '.svg\')"')
 
   // template = template.replace(/require\('@/g, '~@')
   template = template.replace(/~@/g, "require('@")

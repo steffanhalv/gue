@@ -96,6 +96,21 @@ export default {
   watch: {
     'store.current.path'() {
       this.getFiles()
+    },
+    'selected': {
+      deep: true,
+      handler(val) {
+        console.log(val)
+        if (val)
+          this.target.setAttribute('data-original', JSON.stringify(val))
+          let t = document.createElement('html')
+          t.innerHTML = this.component.template
+          t = t.getElementsByTagName('body')[0]
+          t
+            .querySelectorAll('[data-identifier="' + this.target.getAttribute('data-identifier') + '"]')[0]
+            .setAttribute('data-original', JSON.stringify(val))
+          this.component.template = t.innerHTML
+      }
     }
   },
   methods: {
@@ -123,6 +138,7 @@ export default {
     },
     select(e) {
       /* eslint-disable */
+      this.target = e.target
       this.selected = JSON.parse(e.target.getAttribute('data-original'))
       /* eslint-enable */
     },
