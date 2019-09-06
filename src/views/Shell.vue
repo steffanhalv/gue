@@ -2,6 +2,7 @@
   <div class="shell" id="shell">
     <div class="topbar">
       {{ store.current.path }} | {{ store.current.file }}
+      <button @click="save()">Save</button>
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window">
@@ -11,10 +12,16 @@
           :is="component"
         ></component>
         <component
+          v-for="(s, i) in styles"
+          v-html="s"
           :key="i"
-          v-for="(style, i) in styles"
           :is="'style'"
-          v-html="style"
+        ></component>
+        <component
+          v-for="(s, i) in style"
+          v-html="s"
+          :key="i"
+          :is="'style'"
         ></component>
       </div>
     </div>
@@ -27,7 +34,8 @@
 
 <script>
 import fs from 'fs'
-import parser from '../code/parse_vue'
+import parser from '../code/parser'
+import encoder from '../code/encoder'
 import Styling from '@/components/Styling'
 import Explorer from '@/components/Explorer'
 import interact from 'interactjs'
@@ -41,17 +49,18 @@ export default {
       selected: null,
       component: null,
       styles: [],
+      style: [],
       file: null,
       src: ''
     }
   },
   created() {
     setInterval(() => {
-      this.parseVue()
+      this.parse()
     }, 1000)
   },
   mounted() {
-    this.parseVue()
+    this.parse()
     this.getFiles()
     interact('.toolbar')
       .resizable({
@@ -90,12 +99,34 @@ export default {
     }
   },
   methods: {
+    save() {
+      if (
+        this.store.current &&
+        this.store.current.path &&
+        this.store.current.file
+      ) {
+        let path =
+          this.store.current.path + this.src + '/' + this.store.current.file
+        let ext = this.store.current.file.split('.').pop()
+        if (
+          fs.existsSync(path) &&
+          fs.lstatSync(path).isFile() &&
+          ext === 'vue'
+        ) {
+          encoder(path, this.component, this.style)
+        } else {
+          this.file = null
+        }
+      } else {
+        this.file = null
+      }
+    },
     select(e) {
       /* eslint-disable */
       this.selected = JSON.parse(e.target.getAttribute('data-original'))
       /* eslint-enable */
     },
-    parseVue() {
+    parse() {
       if (
         this.store.current &&
         this.store.current.path &&
@@ -115,6 +146,7 @@ export default {
             let parsed = parser(path)
             this.component = parsed.component
             this.styles = parsed.styles
+            this.style = parsed.style
           }
         } else {
           this.file = null

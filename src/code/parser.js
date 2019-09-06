@@ -18,6 +18,7 @@ export default (path = '') => {
     let root = path.substring(0, path.indexOf('/src')) + '/src' // @todo - set from src
     if (content) {
       let styles = []
+      let style = []
       //// Get document
       let dom = document.createElement('html')
       dom.innerHTML = content
@@ -80,6 +81,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(root + match.substring(1))
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(root + match.substring(1)) &&
@@ -92,6 +94,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(root + match.substring(1) + '.vue')
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(root + match.substring(1) + '.js') &&
@@ -114,6 +117,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(path + match.substring(2))
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(path + match.substring(2)) &&
@@ -126,6 +130,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(path + match.substring(2) + '.vue')
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(path + match.substring(2) + '.js') &&
@@ -148,6 +153,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(path + '/' + match)
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(path + '/' + match) &&
@@ -160,6 +166,7 @@ export default (path = '') => {
           ) {
             let comp = loadVue(path + '/' + match + '.vue')
             styles = styles.concat(comp.styles)
+            styles = styles.concat(comp.style)
             return convert(comp.component)
           } else if (
             fs.existsSync(path + '/' + match + '.js') &&
@@ -193,17 +200,19 @@ export default (path = '') => {
 
       //// Get styles
       let styleContainer = dom.querySelectorAll('head > style')
-      Array.prototype.slice.call(styleContainer).forEach(style => {
-        styles.push(style.innerHTML)
+      Array.prototype.slice.call(styleContainer).forEach(s => {
+        style.push(s.innerHTML)
       })
       return {
         component,
-        styles
+        styles,
+        style
       }
     } else {
       return {
         component: {},
-        styles: []
+        styles: [],
+        style: []
       }
     }
   }

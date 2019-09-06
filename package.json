@@ -17,6 +17,7 @@
     "electron-store": "^4.0.0",
     "interactjs": "^1.4.0-rc.13",
     "js-beautify": "^1.10.2",
+    "lebab": "^3.1.0",
     "tosource": "^1.0.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3"
