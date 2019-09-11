@@ -1,4 +1,4 @@
-export default (keypoints) => {
+export default keypoints => {
   if (!keypoints.motion.length) return keypoints.current
   keypoints.motion.sort((a, b) =>
     a.index > b.index ? 1 : b.index > a.index ? -1 : 0
@@ -43,9 +43,7 @@ export default (keypoints) => {
               /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
               (m, r, g, b) => r + r + g + g + b + b
             )
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
-              hex
-            )
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
             if (result)
               start.style[key] = 'rgb('
                 .concat(parseInt(result[1], 16), ', ')

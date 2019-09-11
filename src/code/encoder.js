@@ -22,7 +22,9 @@ export default (path, component, style) => {
   let template = obj.template
   delete obj.template
   delete obj._Ctor
-  delete obj.methods.select_in_gue
+  delete obj.methods.gue__select
+  delete obj.methods.gue__mouseover
+  delete obj.methods.gue__mouseleave
   Object.keys(obj.components).forEach(key => {
     obj.components[key] = '!REMOVEME!'
   })

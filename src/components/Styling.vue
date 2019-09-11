@@ -11,7 +11,7 @@
         <div
           style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
         >
-          <input v-model="selected[attribute]">
+          <input v-model="selected[attribute]" />
         </div>
       </div>
     </div>

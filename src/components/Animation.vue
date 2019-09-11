@@ -4,8 +4,9 @@
     style="position: absolute"
     :is="tag"
     :key="motion.key + '-' + motion.progress"
-    :style="motion.current">
-    <slot/>
+    :style="motion.current"
+  >
+    <slot />
   </component>
 </template>
 

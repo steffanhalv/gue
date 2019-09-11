@@ -45,14 +45,24 @@ export default (path = '') => {
           if (node.hasAttribute('@click')) {
             node.removeAttribute('@click')
           }
-          node.setAttribute('click----enabled', 'select_in_gue')
+          if (node.hasAttribute('@mouseover')) {
+            node.removeAttribute('@mouseover')
+          }
+          if (node.hasAttribute('@mouseleave')) {
+            node.removeAttribute('@mouseleave')
+          }
+          node.setAttribute('gue_click', 'gue__select')
+          node.setAttribute('gue_mouseover', 'gue__mouseover')
+          node.setAttribute('gue_mouseleave', 'gue__mouseleave')
           node.setAttribute('data-original', JSON.stringify(obj))
         })
         let beautyHtml = beautify.html(t.innerHTML, {
           indent_size: 2,
           space_in_empty_paren: true
         })
-        template = beautyHtml.replace(/click----enabled/g, '@click')
+        template = beautyHtml.replace(/gue_click/g, '@click')
+        template = template.replace(/gue_mouseover/g, '@mouseover')
+        template = template.replace(/gue_mouseleave/g, '@mouseleave')
       }
       template = template.replace(/~@/g, "'file://" + path)
       template = template.replace(/url\(' \+ 'file/g, 'url(file')
@@ -192,8 +202,14 @@ export default (path = '') => {
       if (!component.methods) component.methods = {}
       /* eslint-disable */
       if (main) {
-        component.methods.select_in_gue = (e) => {
-          eval('this.$emit(\'select_in_gue\', e)')
+        component.methods.gue__select = (e) => {
+          eval('this.$emit(\'gue-select\', e)')
+        }
+        component.methods.gue__mouseover = (e) => {
+          eval('this.$emit(\'gue-mouseover\', e)')
+        }
+        component.methods.gue__mouseleave = (e) => {
+          eval('this.$emit(\'gue-mouseleave\', e)')
         }
       }
       /* eslint-enable */

@@ -7,7 +7,10 @@
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window">
         <component
-          @select_in_gue="select"
+          ref="component"
+          @gue-select="select"
+          @gue-mouseover="mouseover"
+          @gue-mouseleave="mouseleave"
           v-if="component"
           :is="component"
         ></component>
@@ -29,20 +32,29 @@
       <styling class="toolbar__styling" :selected="selected" />
       <explorer class="toolbar__explorer" />
     </div>
+    <div :key="render" class="bottombar">
+      <timeline
+        v-if="$refs && $refs.component && $refs.component.animations"
+        @update="data = $event, Object.assign($refs.component, $event)"
+        :data="data"/>
+    </div>
   </div>
 </template>
 
 <script>
 import fs from 'fs'
+import tosource from 'tosource'
 import parser from '../code/parser'
 import encoder from '../code/encoder'
 import Styling from '@/components/Styling'
 import Explorer from '@/components/Explorer'
+import Timeline from '@/components/Timeline'
 import interact from 'interactjs'
 export default {
   components: {
     Styling,
-    Explorer
+    Explorer,
+    Timeline
   },
   data() {
     return {
@@ -51,7 +63,9 @@ export default {
       styles: [],
       style: [],
       file: null,
-      src: ''
+      src: '',
+      render: false,
+      data: null
     }
   },
   created() {
@@ -97,19 +111,20 @@ export default {
     'store.current.path'() {
       this.getFiles()
     },
-    'selected': {
+    selected: {
       deep: true,
       handler(val) {
         console.log(val)
-        if (val)
-          this.target.setAttribute('data-original', JSON.stringify(val))
-          let t = document.createElement('html')
-          t.innerHTML = this.component.template
-          t = t.getElementsByTagName('body')[0]
-          t
-            .querySelectorAll('[data-identifier="' + this.target.getAttribute('data-identifier') + '"]')[0]
-            .setAttribute('data-original', JSON.stringify(val))
-          this.component.template = t.innerHTML
+        if (val) this.target.setAttribute('data-original', JSON.stringify(val))
+        let t = document.createElement('html')
+        t.innerHTML = this.component.template
+        t = t.getElementsByTagName('body')[0]
+        t.querySelectorAll(
+          '[data-identifier="' +
+            this.target.getAttribute('data-identifier') +
+            '"]'
+        )[0].setAttribute('data-original', JSON.stringify(val))
+        this.component.template = t.innerHTML
       }
     }
   },
@@ -128,7 +143,11 @@ export default {
           fs.lstatSync(path).isFile() &&
           ext === 'vue'
         ) {
-          encoder(path, this.component, this.style)
+          let comp = Object.assign({}, this.component)
+          let data
+          eval('data = function () { return ' + tosource(this.data) + ' }')
+          comp.data = data
+          encoder(path, comp, this.style)
         } else {
           this.file = null
         }
@@ -141,6 +160,17 @@ export default {
       this.target = e.target
       this.selected = JSON.parse(e.target.getAttribute('data-original'))
       /* eslint-enable */
+    },
+    mouseover(e) {
+      Array.prototype.slice.call(
+        document.getElementsByClassName('gue-element-hover')
+      ).forEach(el => {
+        el.classList.remove('gue-element-hover')
+      })
+      e.target.classList.add('gue-element-hover')
+    },
+    mouseleave(e) {
+      e.target.classList.remove('gue-element-hover')
     },
     parse() {
       if (
@@ -161,8 +191,12 @@ export default {
             this.file = file
             let parsed = parser(path)
             this.component = parsed.component
+            this.data = this.component.data()
             this.styles = parsed.styles
             this.style = parsed.style
+            this.$nextTick(() => {
+              this.render = !this.render
+            })
           }
         } else {
           this.file = null
@@ -189,6 +223,18 @@ export default {
 }
 </script>
 
+<style>
+.window.all-events * {
+  pointer-events: all!important;
+}
+.gue-element-hover {
+  cursor: pointer;
+  background-color: rgb(72, 137, 235, .8);
+  opacity: .8;
+  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-180deg) saturate(600%) contrast(0.8)
+}
+</style>
+
 <style scoped>
 .shell {
   position: absolute;
@@ -199,10 +245,10 @@ export default {
 }
 .playground {
   position: absolute;
-  bottom: 0;
+  bottom: 300px;
   float: left;
   width: calc(100% - 230px);
-  height: calc(100% - 40px);
+  height: calc(100% - 340px);
   background-color: #222;
 }
 .toolbar {
@@ -221,6 +267,15 @@ export default {
   height: 40px;
   background-color: #555;
   color: #eee;
+}
+.bottombar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 300px;
+  background-color: #555;
+  color: #eee;
+  overflow: auto;
 }
 .toolbar__styling {
   height: 60%;
