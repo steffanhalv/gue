@@ -33,7 +33,6 @@ export default {
       deep: true,
       handler() {
         this.$emit('update', this.data)
-        console.log('change')
       }
     }
   }

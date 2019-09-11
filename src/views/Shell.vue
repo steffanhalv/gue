@@ -1,11 +1,16 @@
 <template>
-  <div class="shell" id="shell">
+  <div class="shell" id="shell" :key="render">
     <div class="topbar">
+      <button @click="selecting=!selecting">{{ selecting ? 'Preview' : 'Select'}}</button>
+      <button @click="events=!events">{{ events ? 'Default' : 'All clickable'}}</button>
       {{ store.current.path }} | {{ store.current.file }}
       <button @click="save()">Save</button>
     </div>
     <div class="playground" id="playground">
-      <div v-if="file" class="window" id="window">
+      <div v-if="file" class="window" id="window" :class="{
+        selecting,
+        'all-events': events
+      }">
         <component
           ref="component"
           @gue-select="select"
@@ -29,10 +34,11 @@
       </div>
     </div>
     <div class="toolbar" id="toolbar">
-      <styling class="toolbar__styling" :selected="selected" />
-      <explorer class="toolbar__explorer" />
+      <styling class="toolbar__container" :selected="selected" />
+      <explorer class="toolbar__container" />
+      <dom @select="select" v-if="component" class="toolbar__container" :template="component.template"/>
     </div>
-    <div :key="render" class="bottombar">
+    <div class="bottombar">
       <timeline
         v-if="$refs && $refs.component && $refs.component.animations"
         @update="data = $event, Object.assign($refs.component, $event)"
@@ -49,15 +55,19 @@ import encoder from '../code/encoder'
 import Styling from '@/components/Styling'
 import Explorer from '@/components/Explorer'
 import Timeline from '@/components/Timeline'
+import Dom from '@/components/Dom'
 import interact from 'interactjs'
 export default {
   components: {
     Styling,
     Explorer,
-    Timeline
+    Timeline,
+    Dom
   },
   data() {
     return {
+      selecting: false,
+      events: false,
       selected: null,
       component: null,
       styles: [],
@@ -114,7 +124,6 @@ export default {
     selected: {
       deep: true,
       handler(val) {
-        console.log(val)
         if (val) this.target.setAttribute('data-original', JSON.stringify(val))
         let t = document.createElement('html')
         t.innerHTML = this.component.template
@@ -125,6 +134,11 @@ export default {
             '"]'
         )[0].setAttribute('data-original', JSON.stringify(val))
         this.component.template = t.innerHTML
+        document.querySelectorAll(
+          '[data-identifier="' +
+            this.target.getAttribute('data-identifier') +
+            '"]'
+        )[0].setAttribute('data-original', JSON.stringify(val))
       }
     }
   },
@@ -157,8 +171,9 @@ export default {
     },
     select(e) {
       /* eslint-disable */
-      this.target = e.target
-      this.selected = JSON.parse(e.target.getAttribute('data-original'))
+      if (e.target) this.target = e.target
+      else this.target = e
+      this.selected = JSON.parse(this.target.getAttribute('data-original'))
       /* eslint-enable */
     },
     mouseover(e) {
@@ -227,7 +242,7 @@ export default {
 .window.all-events * {
   pointer-events: all!important;
 }
-.gue-element-hover {
+.window.selecting .gue-element-hover {
   cursor: pointer;
   background-color: rgb(72, 137, 235, .8);
   opacity: .8;
@@ -259,6 +274,7 @@ export default {
   height: calc(100% - 40px);
   box-sizing: border-box;
   touch-action: none;
+  overflow: auto;
 }
 .topbar {
   position: absolute;
@@ -277,11 +293,8 @@ export default {
   color: #eee;
   overflow: auto;
 }
-.toolbar__styling {
-  height: 60%;
-}
-.toolbar__explorer {
-  height: 40%;
+.toolbar__container {
+  height: 350px;
 }
 .playground *:hover {
   /*
