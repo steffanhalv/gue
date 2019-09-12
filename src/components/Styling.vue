@@ -11,7 +11,7 @@
         </span>
         <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="style[key]" />
       </div>
-      <div v-if="selected.index">
+      <div v-if="selected && selected.index">
         <span style="width: 50%; text-align: left; float: left; margin: 0">
           Index
         </span>
