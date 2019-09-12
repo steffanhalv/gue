@@ -1,6 +1,7 @@
 <template>
   <div class="timeline" v-if="data" @click="data.animations.logo.current.width = '30%'">
     <div
+      :class="isCurrent(element, key) ? 'current' : ''"
       class="sequence-line"
       :key="key"
       v-for="(ani, key) in data.animations">
@@ -29,7 +30,13 @@
 
 <script>
 export default {
-  props: ['data'],
+  props: ['data', 'element'],
+  methods: {
+    isCurrent(attr, key) {
+      if (attr === 'animations[\'' + key + '\']') return true
+      return false
+    }
+  },
   watch: {
     'data': {
       deep: true,
@@ -69,6 +76,9 @@ export default {
   float: left;
   font-size: .9em;
   padding: 1px 0 0 50px;
+}
+.sequence-line.current .sequence {
+  background: rgb(205, 70, 144);
 }
 .sequence {
   position: absolute;

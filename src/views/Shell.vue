@@ -46,6 +46,7 @@
         v-if="$refs && $refs.component && $refs.component.animations"
         @motion="motion = $event"
         @update="data = $event, Object.assign($refs.component, $event)"
+        :element="selected && selected[':motion'] ? selected[':motion'] : null"
         :data="data"/>
     </div>
   </div>
@@ -236,6 +237,12 @@ export default {
       /* eslint-disable */
       if (e.target) this.target = e.target
       else this.target = e
+      Array.prototype.slice.call(
+        document.getElementsByClassName('gue-selection')
+      ).forEach(el => {
+        el.classList.remove('gue-selection')
+      })
+      this.target.classList.add('gue-selection')
       this.selected = JSON.parse(this.target.getAttribute('data-original'))
       /* eslint-enable */
     },
@@ -308,8 +315,13 @@ export default {
 .window.selecting .gue-element-hover {
   cursor: pointer;
   background-color: rgb(72, 137, 235, .8);
-  opacity: .8;
+  opacity: .8!important;
   filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-180deg) saturate(600%) contrast(0.8)
+}
+.window .gue-selection {
+  background-color: rgba(72, 235, 72, 0.8);
+  opacity: .8!important;
+  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-90deg) saturate(600%) contrast(0.8)
 }
 </style>
 
