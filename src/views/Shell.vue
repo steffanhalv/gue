@@ -180,7 +180,8 @@ export default {
     window.addEventListener('resize', () => {
       document.getElementById('playground').style.width =
         document.getElementById('shell').offsetWidth -
-        document.getElementById('toolbar').offsetWidth +
+        document.getElementById('toolbar-right').offsetWidth -
+        document.getElementById('toolbar-left').offsetWidth +
         'px'
     })
   },
@@ -349,14 +350,12 @@ export default {
 }
 .window.selecting .gue-element-hover {
   cursor: pointer;
-  background-color: rgb(72, 137, 235, .8);
-  opacity: .8!important;
-  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-180deg) saturate(600%) contrast(0.8)
+  background-color: rgb(72, 137, 235, .1);
+  opacity: .9!important;
 }
-.window .gue-selection {
-  background-color: rgba(72, 235, 72, 0.8);
-  opacity: .8!important;
-  filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-90deg) saturate(600%) contrast(0.8)
+.window.selecting .gue-element-hover.gue-selection, .window .gue-selection {
+  background-color: rgb(72, 137, 235, .7);
+  opacity: 1!important;
 }
 </style>
 

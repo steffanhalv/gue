@@ -1,7 +1,7 @@
 <template>
   <div class="styles">
     <label v-if="selected && selected.motion">Timeline</label>
-    <label v-else-if="selected && typeof selected.index !== 'undefined'">Keypoint {{ selected.index }}</label>
+    <label style="cursor: pointer" @click="$emit('motion', selected)" v-else-if="selected && typeof selected.index !== 'undefined'">Keypoint {{ selected.index }}</label>
     <label v-else>Style</label>
     <div v-if="store.current" style="color: #eee">
       <div
@@ -19,18 +19,18 @@
         </span>
         <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="selected.index" />
       </div>
-      <label v-if="selected && selected.motion">Keypoints</label>
-      <span v-if="selected && selected.motion">
-        <span @click="$emit('motion', motion)" class="motion-select" :key="key" v-for="(motion, key) in selected.motion">
-          {{ motion.index }}
-        </span>
-      </span>
+      <styling
+        @motion="$emit('motion', $event)"
+        :selected="motion"
+        :key="key"
+        v-for="(motion, key) in selected.motion"/>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'styling',
   props: ['selected'],
   data() {
     return {}
