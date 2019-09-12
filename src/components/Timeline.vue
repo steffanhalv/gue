@@ -12,6 +12,7 @@
         }"
         v-if="ani.motion.length">
         <div
+          @click="$emit('motion', m)"
           style="position: absolute; height: 100%; background: blue"
           :style="{
             left: m.index - ani.motion[0].index + 'px'

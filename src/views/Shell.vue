@@ -1,10 +1,14 @@
 <template>
   <div class="shell" id="shell" :key="render">
-    <div class="topbar">
+    <div class="topbar" id="topbar">
       <button @click="selecting=!selecting">{{ selecting ? 'Preview' : 'Select'}}</button>
       <button @click="events=!events">{{ events ? 'Default' : 'All clickable'}}</button>
       {{ store.current.path }} | {{ store.current.file }}
       <button @click="save()">Save</button>
+    </div>
+    <div class="toolbar" id="toolbar-left">
+      <styling class="toolbar__container" :selected="motion" />
+      <attributes class="toolbar__container" :selected="selected" />
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window" :class="{
@@ -33,14 +37,14 @@
         ></component>
       </div>
     </div>
-    <div class="toolbar" id="toolbar">
-      <styling class="toolbar__container" :selected="selected" />
+    <div class="toolbar" id="toolbar-right">
       <explorer class="toolbar__container" />
       <dom @select="select" v-if="component" class="toolbar__container" :template="component.template"/>
     </div>
     <div class="bottombar">
       <timeline
         v-if="$refs && $refs.component && $refs.component.animations"
+        @motion="motion = $event"
         @update="data = $event, Object.assign($refs.component, $event)"
         :data="data"/>
     </div>
@@ -52,6 +56,7 @@ import fs from 'fs'
 import tosource from 'tosource'
 import parser from '../code/parser'
 import encoder from '../code/encoder'
+import Attributes from '@/components/Attributes'
 import Styling from '@/components/Styling'
 import Explorer from '@/components/Explorer'
 import Timeline from '@/components/Timeline'
@@ -59,6 +64,7 @@ import Dom from '@/components/Dom'
 import interact from 'interactjs'
 export default {
   components: {
+    Attributes,
     Styling,
     Explorer,
     Timeline,
@@ -66,6 +72,7 @@ export default {
   },
   data() {
     return {
+      motion: null,
       selecting: false,
       events: false,
       selected: null,
@@ -86,7 +93,7 @@ export default {
   mounted() {
     this.parse()
     this.getFiles()
-    interact('.toolbar')
+    interact('#toolbar-right')
       .resizable({
         edges: { left: true, right: false, bottom: false, top: false },
         modifiers: [
@@ -108,7 +115,63 @@ export default {
         x += event.deltaRect.right
         target.setAttribute('data-x', x)
         document.getElementById('playground').style.width =
-          document.getElementById('shell').offsetWidth - event.rect.width + 'px'
+          document.getElementById('shell').offsetWidth - document.getElementById('toolbar-left').offsetWidth - event.rect.width + 'px'
+      })
+    interact('#toolbar-left')
+      .resizable({
+        edges: { left: false, right: true, bottom: false, top: false },
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: 'parent',
+            endOnly: true
+          }),
+          interact.modifiers.restrictSize({
+            min: { width: 5 },
+            max: { width: 900 }
+          })
+        ],
+        inertia: true
+      })
+      .on('resizemove', function(event) {
+        var target = event.target
+        var x = parseFloat(target.getAttribute('data-x')) || 0
+        target.style.width = event.rect.width + 'px'
+        x += event.deltaRect.right
+        target.setAttribute('data-x', x)
+        document.getElementById('playground').style.width =
+          document.getElementById('shell').offsetWidth - document.getElementById('toolbar-right').offsetWidth - event.rect.width + 'px'
+        document.getElementById('playground').style.left =
+          event.rect.width + 'px'
+      })
+    interact('.bottombar')
+      .resizable({
+        edges: { left: false, right: false, bottom: false, top: true },
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: 'parent',
+            endOnly: true
+          }),
+          interact.modifiers.restrictSize({
+            min: { height: 5 },
+            max: { height: 900 }
+          })
+        ],
+        inertia: true
+      })
+      .on('resizemove', function(event) {
+        var target = event.target
+        var y = parseFloat(target.getAttribute('data-y')) || 0
+        target.style.height = event.rect.height + 'px'
+        y += event.deltaRect.bottom
+        target.setAttribute('data-y', y)
+        let h = document.getElementById('shell').offsetHeight - document.getElementById('topbar').offsetHeight - event.rect.height + 'px'
+        let b = event.rect.height + 'px'
+        document.getElementById('playground').style.height = h
+        document.getElementById('playground').style.bottom = b
+        document.getElementById('toolbar-left').style.height = h
+        document.getElementById('toolbar-left').style.bottom = b
+        document.getElementById('toolbar-right').style.height = h
+        document.getElementById('toolbar-right').style.bottom = b
       })
     window.addEventListener('resize', () => {
       document.getElementById('playground').style.width =
@@ -260,18 +323,21 @@ export default {
 }
 .playground {
   position: absolute;
+  left: 230px;
   bottom: 300px;
   float: left;
-  width: calc(100% - 230px);
+  width: calc(100% - 460px);
   height: calc(100% - 340px);
   background-color: #222;
 }
+#toolbar-right {
+  right: 0;
+}
 .toolbar {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  bottom: 300px;
   width: 230px;
-  height: calc(100% - 40px);
+  height: calc(100% - 340px);
   box-sizing: border-box;
   touch-action: none;
   overflow: auto;
@@ -294,7 +360,8 @@ export default {
   overflow: auto;
 }
 .toolbar__container {
-  height: 350px;
+  height: 50%;
+  overflow-y: auto;
 }
 .playground *:hover {
   /*

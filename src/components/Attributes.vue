@@ -1,24 +1,16 @@
 <template>
   <div class="styles">
-    <label>Styles</label>
+    <label>Attributes</label>
     <div v-if="store.current" style="color: #eee">
       <div
-        :key="key"
-        v-for="(value, key) in style"
+        :key="attribute"
+        v-for="(value, attribute) in selected"
       >
-        {{ key }}
+        {{ attribute }}
         <div
           style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
         >
-          <input v-model="style[key]" />
-        </div>
-      </div>
-      <div v-if="selected.index">
-        Index
-        <div
-          style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
-        >
-          <input v-model="selected.index" />
+          <input v-model="selected[attribute]" />
         </div>
       </div>
     </div>
@@ -30,13 +22,6 @@ export default {
   props: ['selected'],
   data() {
     return {}
-  },
-  computed: {
-    style() {
-      if (this.selected.style)
-        return this.selected.style
-      return this.selected
-    }
   }
 }
 </script>
