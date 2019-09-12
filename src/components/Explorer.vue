@@ -1,6 +1,6 @@
 <template>
   <div class="files">
-    <label>Explorer</label>
+    <label>Files & folders</label>
     <div v-if="store.current && store.current.files">
       <div
         :key="i"

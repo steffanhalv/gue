@@ -66,16 +66,22 @@ label {
   width: 100%;
 }
 ul {
-  list-style-type: none; 
+  list-style-type: none;
   margin: 0;
-  padding: 0 0 0 15px;
-  text-align: left;
+  padding: 0 0 0 15px;  text-align: left;
   cursor: pointer;
 }
-li span:hover {
+li span {
+  display: inline-block;
   color: white;
+  background: #444;
+  padding: 2px 5px;
+  margin-bottom: 2px;
+}
+li span:hover {
+  background: #333;
 }
 li span.current {
-  color: rgb(205, 70, 144);
+  background: rgb(205, 70, 144);
 }
 </style>

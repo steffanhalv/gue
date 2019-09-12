@@ -1,10 +1,12 @@
 <template>
   <div class="shell" id="shell" :key="render">
     <div class="topbar" id="topbar">
-      <button @click="selecting=!selecting">{{ selecting ? 'Preview' : 'Select'}}</button>
-      <button @click="events=!events">{{ events ? 'Default' : 'All clickable'}}</button>
-      {{ store.current.path }} | {{ store.current.file }}
-      <button @click="save()">Save</button>
+      <button style="margin-right: 20px" @click="save()">Save</button>
+      <button @click="selecting=!selecting">{{ selecting ? 'Stop highlighting' : 'Selection higlight'}}</button>
+      <button @click="events=!events">{{ events ? 'Allow click through' : 'Dissallow click through'}}</button>
+      <span style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
+        {{ store.current.path }} | {{ store.current.file }}
+      </span>
     </div>
     <div class="toolbar" id="toolbar-left">
       <attributes class="toolbar__container" :selected="selected" />
@@ -44,6 +46,7 @@
     <div class="bottombar">
       <timeline
         v-if="$refs && $refs.component && $refs.component.animations"
+        @timeline="timelineSelection($event)"
         @motion="motion = $event"
         @update="data = $event, Object.assign($refs.component, $event)"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
@@ -114,7 +117,7 @@ export default {
         var x = parseFloat(target.getAttribute('data-x')) || 0
         target.style.width = event.rect.width + 'px'
         x += event.deltaRect.right
-        target.setAttribute('data-x', x)
+        if (target) target.setAttribute('data-x', x)
         document.getElementById('playground').style.width =
           document.getElementById('shell').offsetWidth - document.getElementById('toolbar-left').offsetWidth - event.rect.width + 'px'
       })
@@ -138,7 +141,7 @@ export default {
         var x = parseFloat(target.getAttribute('data-x')) || 0
         target.style.width = event.rect.width + 'px'
         x += event.deltaRect.right
-        target.setAttribute('data-x', x)
+        if (target) target.setAttribute('data-x', x)
         document.getElementById('playground').style.width =
           document.getElementById('shell').offsetWidth - document.getElementById('toolbar-right').offsetWidth - event.rect.width + 'px'
         document.getElementById('playground').style.left =
@@ -164,7 +167,7 @@ export default {
         var y = parseFloat(target.getAttribute('data-y')) || 0
         target.style.height = event.rect.height + 'px'
         y += event.deltaRect.bottom
-        target.setAttribute('data-y', y)
+        if (target) target.setAttribute('data-y', y)
         let h = document.getElementById('shell').offsetHeight - document.getElementById('topbar').offsetHeight - event.rect.height + 'px'
         let b = event.rect.height + 'px'
         document.getElementById('playground').style.height = h
@@ -188,25 +191,46 @@ export default {
     selected: {
       deep: true,
       handler(val) {
-        if (val) this.target.setAttribute('data-original', JSON.stringify(val))
+        if (val && this.target) this.target.setAttribute('data-original', JSON.stringify(val))
         let t = document.createElement('html')
         t.innerHTML = this.component.template
         t = t.getElementsByTagName('body')[0]
-        t.querySelectorAll(
+        let tt = t.querySelectorAll(
           '[data-identifier="' +
             this.target.getAttribute('data-identifier') +
             '"]'
-        )[0].setAttribute('data-original', JSON.stringify(val))
+        )[0]
+        if (tt) tt.setAttribute('data-original', JSON.stringify(val))
         this.component.template = t.innerHTML
-        document.querySelectorAll(
+        let d = document.querySelectorAll(
           '[data-identifier="' +
             this.target.getAttribute('data-identifier') +
             '"]'
-        )[0].setAttribute('data-original', JSON.stringify(val))
+        )[0]
+        if (d) d.setAttribute('data-original', JSON.stringify(val))
       }
     }
   },
   methods: {
+    timelineSelection(attr) {
+      let query = ':motion":"animations[\'' + attr + '\']"'
+      Array.prototype.slice.call(
+        document.getElementsByClassName('gue-selection')
+      ).forEach(el => {
+        el.classList.remove('gue-selection')
+      })
+      Array.prototype.slice.call(
+        document.querySelectorAll('.window *')
+      ).forEach(el => {
+        if (el.dataset.original) {
+          if (el.dataset.original.indexOf(query) !== -1) {
+            el.classList.add('gue-selection')
+            this.target = el
+            this.selected = JSON.parse(this.target.getAttribute('data-original'))
+          }
+        }
+      })
+    },
     save() {
       if (
         this.store.current &&
@@ -244,7 +268,6 @@ export default {
       })
       this.target.classList.add('gue-selection')
       this.selected = JSON.parse(this.target.getAttribute('data-original'))
-
       document.querySelectorAll(
           '[data-identifier="' +
             this.target.getAttribute('data-identifier') +
@@ -256,12 +279,18 @@ export default {
       Array.prototype.slice.call(
         document.getElementsByClassName('gue-element-hover')
       ).forEach(el => {
-        el.classList.remove('gue-element-hover')
+        if (el && typeof el !== 'undefined') {
+          el.classList.remove('gue-element-hover')
+        }
       })
-      e.target.classList.add('gue-element-hover')
+      if (e.target) {
+        e.target.classList.add('gue-element-hover')
+      }
     },
     mouseleave(e) {
-      e.target.classList.remove('gue-element-hover')
+      if (e.target) {
+        e.target.classList.remove('gue-element-hover')
+      }
     },
     parse() {
       if (
@@ -359,6 +388,19 @@ export default {
   box-sizing: border-box;
   touch-action: none;
   overflow: auto;
+}
+.topbar button {
+  cursor: pointer;
+  float: left;
+  height: calc(100% - 10px);
+  margin-top: 5px;
+  margin-left: 5px;
+  border-radius: 2px;
+  border: none;
+}
+.topbar button:hover {
+  background: rgb(40, 126, 255);
+  color: white;
 }
 .topbar {
   position: absolute;

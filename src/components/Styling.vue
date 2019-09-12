@@ -1,7 +1,7 @@
 <template>
   <div class="styles">
     <label v-if="selected && selected.motion">Timeline</label>
-    <label v-else-if="selected && selected.index">Keypoint {{ selected.index }}</label>
+    <label v-else-if="selected && typeof selected.index !== 'undefined'">Keypoint {{ selected.index }}</label>
     <label v-else>Style</label>
     <div v-if="store.current" style="color: #eee">
       <div
@@ -13,7 +13,7 @@
         </span>
         <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="style[key]" />
       </div>
-      <div v-if="selected && selected.index">
+      <div v-if="selected && typeof selected.index !== 'undefined'">
         <span style="width: 50%; text-align: left; float: left; margin: 0">
           Index
         </span>
@@ -77,7 +77,7 @@ label {
   background-color: #333;
 }
 .motion-select:hover {
-  background-color: #3b3b3b;
+  background-color: #333;
 }
 .motion-select {
   background-color: #444;

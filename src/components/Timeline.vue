@@ -12,9 +12,9 @@
           width: ani.motion[(ani.motion.length - 1)].index - ani.motion[0].index + 'px'
         }"
         v-if="ani.motion.length">
-        <div @click="$emit('motion', ani)" class="sequence-selector"></div>
+        <div @click="$emit('motion', ani), $emit('timeline', key)" class="sequence-selector"></div>
         <div
-          @click="$emit('motion', m)"
+          @click="$emit('motion', m), $emit('timeline', key)"
           class="keypoint"
           :style="{
             left: m.index - ani.motion[0].index + 'px'

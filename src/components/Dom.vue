@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label>DOM</label>
+    <label>Layers</label>
     <node :element="element" @select="$emit('select', $event)" :node="node"/>
   </div>
 </template>
