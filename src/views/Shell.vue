@@ -8,7 +8,7 @@
     </div>
     <div class="toolbar" id="toolbar-left">
       <attributes class="toolbar__container" :selected="selected" />
-      <styling class="toolbar__container" :selected="motion" />
+      <styling class="toolbar__container" :selected="motion" @motion="motion = $event" />
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window" :class="{

@@ -1,6 +1,8 @@
 <template>
   <div class="styles">
-    <label>Styles</label>
+    <label v-if="selected && selected.motion">Timeline</label>
+    <label v-else-if="selected && selected.index">Keypoint {{ selected.index }}</label>
+    <label v-else>Style</label>
     <div v-if="store.current" style="color: #eee">
       <div
         :key="key"
@@ -17,6 +19,12 @@
         </span>
         <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="selected.index" />
       </div>
+      <label v-if="selected && selected.motion">Keypoints</label>
+      <span v-if="selected && selected.motion">
+        <span @click="$emit('motion', motion)" class="motion-select" :key="key" v-for="(motion, key) in selected.motion">
+          {{ motion.index }}
+        </span>
+      </span>
     </div>
   </div>
 </template>
@@ -31,6 +39,8 @@ export default {
     style() {
       if (this.selected && this.selected.style)
         return this.selected.style
+      if (this.selected && this.selected.current)
+        return this.selected.current
       return this.selected
     }
   }
@@ -65,5 +75,16 @@ label {
 .styles > div > div:hover {
   color: #c5c5c5;
   background-color: #333;
+}
+.motion-select:hover {
+  background-color: #3b3b3b;
+}
+.motion-select {
+  background-color: #444;
+  cursor: pointer;
+  width: calc(100% - 6px);
+  padding: 3px;
+  display: inline-block;
+  text-align: left;
 }
 </style>
