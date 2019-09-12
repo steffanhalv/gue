@@ -39,7 +39,7 @@
     </div>
     <div class="toolbar" id="toolbar-right">
       <explorer class="toolbar__container" />
-      <dom @select="select" v-if="component" class="toolbar__container" :template="component.template"/>
+      <dom @select="select" :element="selected" v-if="component" class="toolbar__container" :template="component.template"/>
     </div>
     <div class="bottombar">
       <timeline
@@ -244,6 +244,12 @@ export default {
       })
       this.target.classList.add('gue-selection')
       this.selected = JSON.parse(this.target.getAttribute('data-original'))
+
+      document.querySelectorAll(
+          '[data-identifier="' +
+            this.target.getAttribute('data-identifier') +
+            '"]'
+        )[0].classList.add('gue-selection')
       /* eslint-enable */
     },
     mouseover(e) {

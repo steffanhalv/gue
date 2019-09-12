@@ -1,14 +1,14 @@
 <template>
   <div>
     <label>DOM</label>
-    <node @select="$emit('select', $event)" :node="node"/>
+    <node :element="element" @select="$emit('select', $event)" :node="node"/>
   </div>
 </template>
 
 <script>
 import Node from '@/components/Node'
 export default {
-  props: ['template'],
+  props: ['template', 'element'],
   components: { Node },
   data() {
     return {
