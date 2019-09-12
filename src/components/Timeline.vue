@@ -1,11 +1,11 @@
 <template>
   <div class="timeline" v-if="data" @click="data.animations.logo.current.width = '30%'">
     <div
-      style="position: relative; height: 20px;"
+      class="sequence-line"
       :key="key"
       v-for="(ani, key) in data.animations">
       <div
-        style="position: absolute; height: 100%; background: black"
+        class="sequence"
         :style="{
           left: ani.motion[0].index + 'px',
           width: ani.motion[(ani.motion.length - 1)].index - ani.motion[0].index + 'px'
@@ -13,7 +13,7 @@
         v-if="ani.motion.length">
         <div
           @click="$emit('motion', m)"
-          style="position: absolute; height: 100%; background: blue"
+          class="keypoint"
           :style="{
             left: m.index - ani.motion[0].index + 'px'
           }"
@@ -21,6 +21,7 @@
           v-for="(m, k) in ani.motion">
           {{m.index}}
         </div>
+        <span class="sequence-key">{{ key }}</span>
       </div>
     </div>
   </div>
@@ -45,5 +46,33 @@ export default {
   height: 100%;
   position: relative;
   overflow: auto;
+}
+.keypoint:hover {
+  background: #115ad1
+}
+.keypoint {
+  cursor: pointer;
+  padding: 0 3px;
+  position: absolute;
+  background: #166fff;
+  margin-top: 1px;
+  font-size: .8em;
+}
+.sequence-line {
+  position: relative;
+  height: 20px;
+  border-bottom: 1px solid #4c4c4c;
+  width: 100%;
+}
+.sequence-key {
+  color: white;
+  float: left;
+  font-size: .9em;
+  padding: 1px 0 0 50px;
+}
+.sequence {
+  position: absolute;
+  height: 100%;
+  background: #187fe0;
 }
 </style>

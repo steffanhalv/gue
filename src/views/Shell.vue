@@ -7,8 +7,8 @@
       <button @click="save()">Save</button>
     </div>
     <div class="toolbar" id="toolbar-left">
-      <styling class="toolbar__container" :selected="motion" />
       <attributes class="toolbar__container" :selected="selected" />
+      <styling class="toolbar__container" :selected="motion" />
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window" :class="{

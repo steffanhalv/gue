@@ -6,20 +6,16 @@
         :key="key"
         v-for="(value, key) in style"
       >
-        {{ key }}
-        <div
-          style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
-        >
-          <input v-model="style[key]" />
-        </div>
+        <span style="width: 50%; text-align: left; float: left; margin: 0">
+          {{ key }}
+        </span>
+        <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="style[key]" />
       </div>
       <div v-if="selected.index">
-        Index
-        <div
-          style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
-        >
-          <input v-model="selected.index" />
-        </div>
+        <span style="width: 50%; text-align: left; float: left; margin: 0">
+          Index
+        </span>
+        <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="selected.index" />
       </div>
     </div>
   </div>
@@ -33,7 +29,7 @@ export default {
   },
   computed: {
     style() {
-      if (this.selected.style)
+      if (this.selected && this.selected.style)
         return this.selected.style
       return this.selected
     }
@@ -63,7 +59,7 @@ label {
   color: #eee;
   background-color: #444;
   cursor: pointer;
-  width: 100%;
+  width: calc(100% - 8px);
   border-bottom: 1px solid #3b3b3b;
 }
 .styles > div > div:hover {

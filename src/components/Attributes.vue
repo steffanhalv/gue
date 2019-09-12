@@ -6,12 +6,10 @@
         :key="attribute"
         v-for="(value, attribute) in selected"
       >
-        {{ attribute }}
-        <div
-          style="background-color: #000; font-size: .9em; margin: 2px 0; padding: 4px"
-        >
-          <input v-model="selected[attribute]" />
-        </div>
+        <span style="width: 50%; text-align: left; float: left; margin: 0">
+          {{ attribute }}
+        </span>
+        <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="selected[attribute]" />
       </div>
     </div>
   </div>
@@ -48,7 +46,7 @@ label {
   color: #eee;
   background-color: #444;
   cursor: pointer;
-  width: 100%;
+  width: calc(100% - 8px);
   border-bottom: 1px solid #3b3b3b;
 }
 .styles > div > div:hover {
