@@ -1,7 +1,12 @@
 <template>
   <div class="styles">
     <label v-if="selected && selected.motion">Timeline</label>
-    <label style="cursor: pointer" @click="$emit('motion', selected)" v-else-if="selected && typeof selected.index !== 'undefined'">Keypoint {{ selected.index }}</label>
+    <label
+      style="cursor: pointer"
+      @click="$emit('motion', selected), $emit('parent', parent)"
+      v-else-if="selected && typeof selected.index !== 'undefined'">
+      Keypoint {{ selected.index }}
+    </label>
     <label v-else>Style</label>
     <div v-if="store.current" style="color: #eee">
       <div
@@ -11,19 +16,30 @@
         <span style="width: 50%; text-align: left; float: left; margin: 0">
           {{ key }}
         </span>
-        <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="style[key]" />
+        <input
+          @input="render(selected, parent)"
+          style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
+          v-model="style[key]" />
       </div>
       <div v-if="selected && typeof selected.index !== 'undefined'">
         <span style="width: 50%; text-align: left; float: left; margin: 0">
           Index
         </span>
-        <input style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;" v-model="selected.index" />
+        <input
+          @input="render(selected, parent)"
+          style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
+          v-model="selected.index" />
       </div>
-      <styling
-        @motion="$emit('motion', $event)"
-        :selected="motion"
-        :key="key"
-        v-for="(motion, key) in selected.motion"/>
+      <span v-if="selected && selected.motion">
+        <styling
+          @render="render($event, selected)"
+          @motion="$emit('motion', $event)"
+          @parent="$emit('parent', $event)"
+          :parent="selected"
+          :selected="motion"
+          :key="key"
+          v-for="(motion, key) in selected.motion"/>
+      </span>
     </div>
   </div>
 </template>
@@ -31,7 +47,7 @@
 <script>
 export default {
   name: 'styling',
-  props: ['selected'],
+  props: ['selected', 'parent'],
   data() {
     return {}
   },
@@ -42,6 +58,14 @@ export default {
       if (this.selected && this.selected.current)
         return this.selected.current
       return this.selected
+    }
+  },
+  methods: {
+    render(selected, parent) {
+      this.$emit('render', {
+        motion: selected,
+        parent: parent
+      })
     }
   }
 }

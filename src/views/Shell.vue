@@ -9,8 +9,14 @@
       </span>
     </div>
     <div class="toolbar" id="toolbar-left">
-      <attributes class="toolbar__container" :selected="selected" />
-      <styling class="toolbar__container" :selected="motion" @motion="motion = $event" />
+      <styling
+        style="height: 100%"
+        class="toolbar__container"
+        :selected="motion"
+        :parent="motionParent"
+        @render="doRender($event)"
+        @parent="motionParent = $event"
+        @motion="motion = $event" />
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window" :class="{
@@ -40,14 +46,25 @@
       </div>
     </div>
     <div class="toolbar" id="toolbar-right">
-      <explorer class="toolbar__container" />
-      <dom @select="select" :element="selected" v-if="component" class="toolbar__container" :template="component.template"/>
+      <explorer style="height: 25%" class="toolbar__container" />
+      <attributes
+        @render="doRender($event)"
+        style="height: 25%"
+        class="toolbar__container"
+        :selected="selected" />
+      <dom
+        v-if="component"
+        @select="select"
+        class="toolbar__container"
+        :element="selected"
+        :template="component.template"/>
     </div>
     <div class="bottombar">
       <timeline
         v-if="$refs && $refs.component && $refs.component.animations"
         @timeline="timelineSelection($event)"
         @motion="motion = $event"
+        @parent="motionParent = $event"
         @update="data = $event, Object.assign($refs.component, $event)"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
         :data="data"/>
@@ -77,6 +94,7 @@ export default {
   data() {
     return {
       motion: null,
+      motionParent: null,
       selecting: false,
       events: false,
       selected: null,
@@ -213,6 +231,17 @@ export default {
     }
   },
   methods: {
+    doRender(obj) {
+      if (
+        obj.parent &&
+        this.$refs.component &&
+        this.$refs.component.animations &&
+        this.$refs.component.animations[obj.parent.key]
+      ) {
+        console.log('hey', obj.parent.key)
+        this.component.methods.animate(this.$refs.component.animations[obj.parent.key])
+      }
+    },
     timelineSelection(attr) {
       let query = ':motion":"animations[\'' + attr + '\']"'
       Array.prototype.slice.call(
@@ -248,6 +277,12 @@ export default {
         ) {
           let comp = Object.assign({}, this.component)
           let data
+          this.progress = 0
+          Object.keys(this.data.animations).forEach(key => {
+            this.progress = 0
+            this.data.animations[key].progress = 0
+            this.component.methods.animate(this.data.animations[key])
+          })
           eval('data = function () { return ' + tosource(this.data) + ' }')
           comp.data = data
           encoder(path, comp, this.style)

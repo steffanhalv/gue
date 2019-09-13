@@ -1,7 +1,7 @@
 <template>
   <div class="timeline" v-if="data" @click="data.animations.logo.current.width = '30%'">
     <div
-      :class="isCurrent(element, key) ? 'current' : ''"
+      :class="isCurrent(element, key, ani) ? 'current' : ''"
       class="sequence-line"
       :key="key"
       v-for="(ani, key) in data.animations">
@@ -12,9 +12,9 @@
           width: ani.motion[(ani.motion.length - 1)].index - ani.motion[0].index + 'px'
         }"
         v-if="ani.motion.length">
-        <div @click="$emit('motion', ani), $emit('timeline', key)" class="sequence-selector"></div>
+        <div @click="$emit('motion', ani), $emit('timeline', key), $emit('parent', null)" class="sequence-selector"></div>
         <div
-          @click="$emit('motion', m), $emit('timeline', key)"
+          @click="$emit('motion', m), $emit('timeline', key), $emit('parent', ani)"
           class="keypoint"
           :style="{
             left: m.index - ani.motion[0].index + 'px'
@@ -33,8 +33,13 @@
 export default {
   props: ['data', 'element'],
   methods: {
-    isCurrent(attr, key) {
-      if (attr === 'animations[\'' + key + '\']') return true
+    isCurrent(attr, key, ani) {
+      if (attr === 'animations[\'' + key + '\']') {
+        this.$emit('motion', ani)
+        this.$emit('timeline', key)
+        this.$emit('parent', null)
+        return true
+      }
       return false
     }
   },
