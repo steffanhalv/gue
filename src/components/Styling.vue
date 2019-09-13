@@ -26,7 +26,7 @@
           v-model="style[key]" />
       </div>
       <div v-if="selected && typeof selected.index !== 'undefined'">
-        <span style="font-weight: bold; padding: .5px 0 0 5px; background: #ccc; color: #166fff; width: calc(50% - 10px); text-align: left; float: left; margin: 0">
+        <span style="font-size: .8em; padding: 3px 0 2px 5px; background: #ccc; color: #111; width: calc(50% - 10px); text-align: left; float: left; margin: 0">
           Index {{ selected.index }}
         </span>
         <input
