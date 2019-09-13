@@ -14,7 +14,6 @@
         class="toolbar__container"
         :selected="motion"
         :parent="motionParent"
-        @render="doRender($event)"
         @parent="motionParent = $event"
         @motion="motion = $event" />
     </div>
@@ -48,7 +47,6 @@
     <div class="toolbar" id="toolbar-right">
       <explorer style="height: 25%" class="toolbar__container" />
       <attributes
-        @render="doRender($event)"
         style="height: 25%"
         class="toolbar__container"
         :selected="selected" />
@@ -65,7 +63,7 @@
         @timeline="timelineSelection($event)"
         @motion="motion = $event"
         @parent="motionParent = $event"
-        @update="data = $event, Object.assign($refs.component, $event)"
+        @update="data = $event, Object.assign($refs.component, JSON.parse(JSON.stringify($event))), doScroll()"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
         :data="data"/>
     </div>
@@ -231,16 +229,8 @@ export default {
     }
   },
   methods: {
-    doRender(obj) {
-      if (
-        obj.parent &&
-        this.$refs.component &&
-        this.$refs.component.animations &&
-        this.$refs.component.animations[obj.parent.key]
-      ) {
-        console.log('hey', obj.parent.key)
-        this.component.methods.animate(this.$refs.component.animations[obj.parent.key])
-      }
+    doScroll() {
+      document.querySelector('.window').dispatchEvent(new Event('scroll'))
     },
     timelineSelection(attr) {
       let query = ':motion":"animations[\'' + attr + '\']"'

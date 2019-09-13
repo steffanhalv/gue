@@ -10,7 +10,6 @@
           {{ attribute }}
         </span>
         <input
-          @input="render(selected)"
           style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
           v-model="selected[attribute]" />
       </div>
@@ -23,11 +22,6 @@ export default {
   props: ['selected'],
   data() {
     return {}
-  },
-  methods: {
-    render(selected) {
-      this.$emit('render', selected)
-    }
   }
 }
 </script>
