@@ -5,7 +5,7 @@
       <button @click="selecting=!selecting">{{ selecting ? 'Stop highlighting' : 'Selection higlight'}}</button>
       <button @click="events=!events">{{ events ? 'Allow click through' : 'Dissallow click through'}}</button>
       <span style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
-        {{ store.current.path }} | {{ store.current.file }}
+        {{ $refs.component ? $refs.component.progress + ' | ' : '' }} {{ store.current.path }} | {{ store.current.file }}
       </span>
     </div>
     <div class="toolbar" id="toolbar-left">
