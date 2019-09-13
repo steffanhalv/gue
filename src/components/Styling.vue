@@ -17,7 +17,7 @@
         v-for="(value, key) in style"
       >
         <span style="width: 50%; text-align: left; float: left; margin: 0">
-          <button @click="remove(key)">-</button>
+          <button class="remove-btn" @click="remove(key)">-</button>
           {{ key }}
         </span>
         <input
@@ -154,7 +154,7 @@ label {
   display: inline-block;
   text-align: left;
 }
-.add-btn:hover {
+.add-btn:hover, .remove-btn:hover {
   background: rgb(40, 126, 255);
   color: white;
 }
@@ -164,6 +164,15 @@ label {
   width: calc(20% - 6px);
   padding: 5px 3px;
   float: right;
+  border-radius: 2px;
+}
+.remove-btn {
+  cursor: pointer;
+  border: none;
+  width: calc(20% - 6px);
+  padding: 2px 3px;
+  margin: 2px 5px 0 0;
+  float: left;
   border-radius: 2px;
 }
 </style>
