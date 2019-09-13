@@ -17,6 +17,7 @@
           {{ key }}
         </span>
         <input
+          @input="render(selected, parent)"
           style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
           v-model="style[key]" />
       </div>
@@ -25,11 +26,13 @@
           Index
         </span>
         <input
+          @input="render(selected, parent)"
           style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
           v-model="selected.index" />
       </div>
       <span v-if="selected && selected.motion">
         <styling
+          @render="render($event, selected)"
           @motion="$emit('motion', $event)"
           @parent="$emit('parent', $event)"
           :parent="selected"
@@ -55,6 +58,14 @@ export default {
       if (this.selected && this.selected.current)
         return this.selected.current
       return this.selected
+    }
+  },
+  methods: {
+    render(selected, parent) {
+      this.$emit('render', {
+        motion: selected,
+        parent: parent
+      })
     }
   }
 }

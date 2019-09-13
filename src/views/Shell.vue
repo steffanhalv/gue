@@ -14,6 +14,7 @@
         class="toolbar__container"
         :selected="motion"
         :parent="motionParent"
+        @render="doRender($event)"
         @parent="motionParent = $event"
         @motion="motion = $event" />
     </div>
@@ -47,6 +48,7 @@
     <div class="toolbar" id="toolbar-right">
       <explorer style="height: 25%" class="toolbar__container" />
       <attributes
+        @render="doRender($event)"
         style="height: 25%"
         class="toolbar__container"
         :selected="selected" />
@@ -229,6 +231,18 @@ export default {
     }
   },
   methods: {
+    doRender(obj) {
+      if (
+        obj.parent &&
+        this.$refs.component &&
+        this.$refs.component.animations &&
+        this.$refs.component.animations[obj.parent.key]
+      ) {
+        // this.component.methods.animate(this.$refs.component.animations[obj.parent.key])
+        Object.assign(this.$refs.component.animations[obj.parent.key], JSON.parse(JSON.stringify(obj.parent)))
+        this.doScroll()
+      }
+    },
     doScroll() {
       document.querySelector('.window').dispatchEvent(new Event('scroll'))
     },
@@ -378,7 +392,7 @@ export default {
   background-color: rgb(72, 137, 235, .1);
   opacity: .9!important;
 }
-.window.selecting .gue-element-hover.gue-selection, .window .gue-selection {
+.window.selecting .gue-element-hover.gue-selection, .window.selecting .gue-selection {
   background-color: rgb(72, 137, 235, .7);
   opacity: 1!important;
 }
