@@ -1,6 +1,6 @@
 <template>
   <div class="styles" :key="renderKey">
-    <label v-if="selected && selected.motion">Timeline</label>
+    <label v-if="selected && selected.motion"><b>Timeline</b></label>
     <label
       style="cursor: pointer"
       @click="$emit('motion', selected), $emit('parent', parent)"
@@ -8,7 +8,7 @@
       <label style="cursor: pointer" v-if="!nest" @click="$emit('motion', parent), $emit('parent', null)">
         Back
       </label>
-      Keypoint {{ selected.index }}
+      <b>Keypoint {{ selected.index }}</b>
     </label>
     <label v-else>Style</label>
     <div v-if="store.current" style="color: #eee">
@@ -26,7 +26,7 @@
           v-model="style[key]" />
       </div>
       <div v-if="selected && typeof selected.index !== 'undefined'">
-        <span style="font-size: .8em; padding: 3px 0 2px 5px; background: #ccc; color: #111; width: calc(50% - 10px); text-align: left; float: left; margin: 0">
+        <span style="font-size: .8em; padding: 6px 0 2px 5px; background: #888; color: #fff; width: calc(50% - 10px); text-align: left; float: left; margin: 0">
           Index {{ selected.index }}
         </span>
         <input
@@ -115,6 +115,11 @@ export default {
 </script>
 
 <style scoped>
+input {
+  color: #fff;
+  background: #333;
+  font-size: .9em;
+}
 label {
   border-top: 5px solid #4c4c4c;
   color: #eee;
@@ -162,17 +167,24 @@ label {
   cursor: pointer;
   border: none;
   width: calc(20% - 6px);
-  padding: 5px 3px;
+  padding: 7px 3px;
   float: right;
   border-radius: 2px;
+  background: #222;
+  color: white;
 }
 .remove-btn {
   cursor: pointer;
   border: none;
-  width: calc(20% - 6px);
+  width: 18px;
   padding: 2px 3px;
-  margin: 2px 5px 0 0;
+  margin: 3px 5px 0 0;
   float: left;
   border-radius: 2px;
+  background: #222;
+  color: white;
+}
+span {
+  padding-top: 2px;
 }
 </style>
