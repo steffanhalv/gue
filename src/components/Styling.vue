@@ -11,6 +11,9 @@
       <b>Keypoint {{ selected.index }}</b>
     </label>
     <label v-else>Style</label>
+    <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="sort()">
+      Sort
+    </button>
     <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="removeMotion()">
       Delete key
     </button>
@@ -92,13 +95,15 @@ export default {
   },
   methods: {
     removeMotion() {
-      console.log('hey', this.idx)
       this.parent.motion.splice(this.idx, 1)
     },
     add() {
       if (this.selected.motion.length) {
         this.selected.motion.push(
-          Object.assign({}, this.selected.motion[this.selected.motion.length - 1])
+          JSON.parse(JSON.stringify(this.selected.motion[this.selected.motion.length - 1]))
+        )
+        this.selected.motion.sort((a, b) =>
+          a.index > b.index ? 1 : b.index > a.index ? -1 : 0
         )
       } else {
         this.selected.motion.push({
@@ -125,6 +130,17 @@ export default {
       delete obj[key]
       this.renderKey = Math.random().toString(36).substring(7)
       this.$emit('save')
+    },
+    sort() {
+      if (this.selected.motion) {
+        this.selected.motion = this.selected.motion.sort((a, b) =>
+          Number(a.index) > Number(b.index) ? 1 : Number(b.index) > Number(a.index) ? -1 : 0
+        )
+      } else if (this.parent.motion) {
+        this.parent.motion = this.parent.motion.sort((a, b) =>
+          Number(a.index) > Number(b.index) ? 1 : Number(b.index) > Number(a.index) ? -1 : 0
+        )
+      }
     },
     render(selected, parent) {
       this.$emit('render', {

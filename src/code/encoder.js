@@ -42,6 +42,8 @@ export default (path, component, style) => {
   let tags = t.getElementsByTagName('*')
   Array.prototype.slice.call(tags).forEach(node => {
     node.removeAttribute('@click')
+    node.removeAttribute('@mouseover')
+    node.removeAttribute('@mouseleave')
     let oldAttributes = JSON.parse(node.getAttribute('data-original'))
     Object.keys(oldAttributes).forEach(attr => {
       if (attr.charAt(0) === '@') {

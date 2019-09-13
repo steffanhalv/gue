@@ -1,7 +1,7 @@
 export default keypoints => {
   if (!keypoints.motion.length) return keypoints.current
   keypoints.motion.sort((a, b) =>
-    a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+    Number(a.index) > Number(b.index) ? 1 : Number(b.index) > Number(a.index) ? -1 : 0
   )
   if (
     keypoints.motion.length === 1 ||
