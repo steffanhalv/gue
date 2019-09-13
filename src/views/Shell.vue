@@ -14,6 +14,7 @@
         class="toolbar__container"
         :selected="motion"
         :parent="motionParent"
+        @save="save()"
         @render="doRender($event)"
         @parent="motionParent = $event"
         @motion="motion = $event" />
@@ -238,9 +239,9 @@ export default {
         this.$refs.component.animations &&
         this.$refs.component.animations[obj.parent.key]
       ) {
+        // Object.assign(this.$refs.component.animations[obj.parent.key], JSON.parse(JSON.stringify(obj.parent)))
         // this.component.methods.animate(this.$refs.component.animations[obj.parent.key])
-        Object.assign(this.$refs.component.animations[obj.parent.key], JSON.parse(JSON.stringify(obj.parent)))
-        this.doScroll()
+        // this.doScroll()
       }
     },
     doScroll() {

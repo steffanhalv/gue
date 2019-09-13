@@ -1,5 +1,5 @@
 <template>
-  <div class="styles">
+  <div class="styles" :key="renderKey">
     <label v-if="selected && selected.motion">Timeline</label>
     <label
       style="cursor: pointer"
@@ -14,6 +14,7 @@
         v-for="(value, key) in style"
       >
         <span style="width: 50%; text-align: left; float: left; margin: 0">
+          <button @click="remove(key)">-</button>
           {{ key }}
         </span>
         <input
@@ -30,8 +31,22 @@
           style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
           v-model="selected.index" />
       </div>
+      <div>
+        <input
+          placeholder="Key"
+          v-model="newKey"
+          style="width: calc(40% - 9px); float: left; margin: 0 3px 0 0; border: 0; padding: 5px 3px;"
+        />
+        <input
+          placeholder="Value"
+          v-model="newValue"
+          style="width: calc(40% - 9px); float: left; margin: 0 0 0 3px; border: 0; padding: 5px 3px;"
+        />
+        <button class="add-btn" @click="append(newKey, newValue)">Add</button>
+      </div>
       <span v-if="selected && selected.motion">
         <styling
+          @save="$emit('save')"
           @render="render($event, selected)"
           @motion="$emit('motion', $event)"
           @parent="$emit('parent', $event)"
@@ -49,7 +64,11 @@ export default {
   name: 'styling',
   props: ['selected', 'parent'],
   data() {
-    return {}
+    return {
+      newKey: '',
+      newValue: '',
+      renderKey: 'renderer_key'
+    }
   },
   computed: {
     style() {
@@ -61,6 +80,26 @@ export default {
     }
   },
   methods: {
+    append(key, value) {
+      let obj = this.selected
+      if (this.selected && this.selected.style)
+        obj = this.selected.style
+      if (this.selected && this.selected.current)
+        obj = this.selected.current
+      obj[key] = value
+      this.renderKey = Math.random().toString(36).substring(7)
+      this.$emit('save')
+    },
+    remove(key) {
+      let obj = this.selected
+      if (this.selected && this.selected.style)
+        obj = this.selected.style
+      if (this.selected && this.selected.current)
+        obj = this.selected.current
+      delete obj[key]
+      this.renderKey = Math.random().toString(36).substring(7)
+      this.$emit('save')
+    },
     render(selected, parent) {
       this.$emit('render', {
         motion: selected,
@@ -110,5 +149,17 @@ label {
   padding: 3px;
   display: inline-block;
   text-align: left;
+}
+.add-btn:hover {
+  background: rgb(40, 126, 255);
+  color: white;
+}
+.add-btn {
+  cursor: pointer;
+  border: none;
+  width: calc(20% - 6px);
+  padding: 5px 3px;
+  float: right;
+  border-radius: 2px;
 }
 </style>
