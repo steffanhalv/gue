@@ -11,6 +11,9 @@
       <b>Keypoint {{ selected.index }}</b>
     </label>
     <label v-else>Style</label>
+    <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="removeMotion()">
+      Delete key
+    </button>
     <div v-if="store.current" style="color: #eee">
       <div
         :key="key"
@@ -53,6 +56,7 @@
           @render="render($event, selected)"
           @motion="$emit('motion', $event)"
           @parent="$emit('parent', $event)"
+          :idx="key"
           :nest="true"
           :parent="selected"
           :selected="motion"
@@ -60,13 +64,16 @@
           v-for="(motion, key) in selected.motion"/>
       </span>
     </div>
+    <button style="width: 100px; margin: 3px" class="add-btn" @click="add()" v-if="selected && selected.motion">
+      Add key
+    </button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'styling',
-  props: ['selected', 'parent', 'nest'],
+  props: ['selected', 'parent', 'nest', 'idx'],
   data() {
     return {
       newKey: '',
@@ -84,6 +91,21 @@ export default {
     }
   },
   methods: {
+    removeMotion() {
+      console.log('hey', this.idx)
+      this.parent.motion.splice(this.idx, 1)
+    },
+    add() {
+      if (this.selected.motion.length) {
+        this.selected.motion.push(
+          Object.assign({}, this.selected.motion[this.selected.motion.length - 1])
+        )
+      } else {
+        this.selected.motion.push({
+          index: 0
+        })
+      }
+    },
     append(key, value) {
       let obj = this.selected
       if (this.selected && this.selected.style)
