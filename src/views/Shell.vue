@@ -393,7 +393,7 @@ export default {
   background-color: rgb(72, 137, 235, .1);
   opacity: .9!important;
 }
-.window.selecting .gue-element-hover.gue-selection, .window.selecting .gue-selection {
+.window.selecting .gue-element-hover.gue-selection, .window .gue-selection {
   background-color: rgb(72, 137, 235, .7);
   opacity: 1!important;
 }

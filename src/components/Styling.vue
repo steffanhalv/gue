@@ -5,6 +5,9 @@
       style="cursor: pointer"
       @click="$emit('motion', selected), $emit('parent', parent)"
       v-else-if="selected && typeof selected.index !== 'undefined'">
+      <label style="cursor: pointer" v-if="!nest" @click="$emit('motion', parent), $emit('parent', null)">
+        Back
+      </label>
       Keypoint {{ selected.index }}
     </label>
     <label v-else>Style</label>
@@ -23,8 +26,8 @@
           v-model="style[key]" />
       </div>
       <div v-if="selected && typeof selected.index !== 'undefined'">
-        <span style="width: 50%; text-align: left; float: left; margin: 0">
-          Index
+        <span style="font-weight: bold; padding: .5px 0 0 5px; background: #ccc; color: #166fff; width: calc(50% - 10px); text-align: left; float: left; margin: 0">
+          Index {{ selected.index }}
         </span>
         <input
           @input="render(selected, parent)"
@@ -50,6 +53,7 @@
           @render="render($event, selected)"
           @motion="$emit('motion', $event)"
           @parent="$emit('parent', $event)"
+          :nest="true"
           :parent="selected"
           :selected="motion"
           :key="key"
@@ -62,7 +66,7 @@
 <script>
 export default {
   name: 'styling',
-  props: ['selected', 'parent'],
+  props: ['selected', 'parent', 'nest'],
   data() {
     return {
       newKey: '',
