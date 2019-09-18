@@ -66,7 +66,7 @@
         @timeline="timelineSelection($event)"
         @motion="motion = $event"
         @parent="motionParent = $event"
-        @update="data = $event, Object.assign($refs.component, JSON.parse(JSON.stringify($event))), doScroll()"
+        @update="data = $event, progress = $refs.component.progress, Object.assign($refs.component, JSON.parse(JSON.stringify($event))), doScroll()"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
         :data="data"/>
     </div>
@@ -105,7 +105,8 @@ export default {
       file: null,
       src: '',
       render: false,
-      data: null
+      data: null,
+      progress: 0
     }
   },
   created() {
@@ -245,7 +246,9 @@ export default {
       }
     },
     doScroll() {
+      console.log(this.$refs.component.progress, this.progress)
       document.querySelector('.window').dispatchEvent(new Event('scroll'))
+      document.querySelector('.window').scrollTo(0, this.progress)
     },
     timelineSelection(attr) {
       let query = ':motion":"animations[\'' + attr + '\']"'
@@ -267,6 +270,7 @@ export default {
       })
     },
     save() {
+      this.progress = this.$refs.component.progress
       if (
         this.store.current &&
         this.store.current.path &&
@@ -282,9 +286,7 @@ export default {
         ) {
           let comp = Object.assign({}, this.component)
           let data
-          this.progress = 0
           Object.keys(this.data.animations).forEach(key => {
-            this.progress = 0
             this.data.animations[key].progress = 0
             this.component.methods.animate(this.data.animations[key])
           })
@@ -357,6 +359,9 @@ export default {
             this.style = parsed.style
             this.$nextTick(() => {
               this.render = !this.render
+              this.$nextTick(() => {
+                document.querySelector('.window').scrollTo(0, this.progress)
+              })
             })
           }
         } else {
