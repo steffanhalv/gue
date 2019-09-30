@@ -1,5 +1,9 @@
 <template>
-  <div class="timeline" v-if="data" @click="data.animations.logo.current.width = '30%'">
+  <div class="timeline" id="timeline" v-if="data">
+    <div class="cursor">
+    </div>
+    <div :style="{ left: progress + 'px', height: hh + 'px' }" class="cursor-arrow"></div>
+    <div style="width: 100%; height: 20px"></div>
     <div
       :class="isCurrent(element, key, ani) ? 'current' : ''"
       class="sequence-line"
@@ -14,7 +18,7 @@
         v-if="ani.motion.length">
         <div @click="$emit('motion', ani), $emit('timeline', key), $emit('parent', null)" class="sequence-selector"></div>
         <div
-          @click="$emit('motion', m), $emit('timeline', key), $emit('parent', ani)"
+          @click="$emit('motion', m), $emit('timeline', key), $emit('parent', ani), $nextTick(() => { $emit('motion', m), $emit('timeline', key), $emit('parent', ani) })"
           class="keypoint"
           :style="{
             left: m.index - ani.motion[0].index + 'px'
@@ -31,7 +35,12 @@
 
 <script>
 export default {
-  props: ['data', 'element'],
+  props: ['data', 'element', 'progress'],
+  data() {
+    return {
+      hh: 100
+    }
+  },
   methods: {
     isCurrent(attr, key, ani) {
       if (attr === 'animations[\'' + key + '\']') {
@@ -42,6 +51,12 @@ export default {
       }
       return false
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (document.getElementById('timeline'))
+        this.hh = document.getElementById('timeline').scrollHeight
+    })
   },
   watch: {
     'data': {
@@ -55,6 +70,21 @@ export default {
 </script>
 
 <style scoped>
+.cursor {
+  position: fixed;
+  width: 100%;
+  height: 20px;
+  background: rgb(0, 0, 0);
+  z-index: 1;
+}
+.cursor-arrow {
+  top: 0;
+  height: 100%;
+  width: 1px;
+  position: absolute;
+  background-color: red;
+  z-index: 10;
+}
 .timeline {
   height: 100%;
   position: relative;

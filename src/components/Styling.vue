@@ -1,5 +1,5 @@
 <template>
-  <div class="styles" :key="renderKey">
+  <div class="styles" :key="renderKey" :class="selected && selected.motion ? 'timeline-wrapper' : 'keypoint-wrapper'">
     <label v-if="selected && selected.motion"><b>Timeline</b></label>
     <label
       style="cursor: pointer"
@@ -17,7 +17,7 @@
     <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="removeMotion()">
       Delete key
     </button>
-    <div v-if="store.current" style="color: #eee">
+    <div v-if="store.current" style="color: #eee" class="style-keys">
       <div
         :key="key"
         v-for="(value, key) in style"
@@ -224,5 +224,11 @@ label {
 }
 span {
   padding-top: 2px;
+}
+.timeline-wrapper .keypoint-wrapper .style-keys {
+  display: none;
+}
+.timeline-wrapper .style-keys {
+  /*display: none;*/
 }
 </style>

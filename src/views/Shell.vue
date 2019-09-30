@@ -9,15 +9,13 @@
       </span>
     </div>
     <div class="toolbar" id="toolbar-left">
-      <styling
+      <dom
+        v-if="component"
+        @select="select"
         style="height: 100%"
         class="toolbar__container"
-        :selected="motion"
-        :parent="motionParent"
-        @save="save()"
-        @render="doRender($event)"
-        @parent="motionParent = $event"
-        @motion="motion = $event" />
+        :element="selected"
+        :template="component.template"/>
     </div>
     <div class="playground" id="playground">
       <div v-if="file" class="window" id="window" :class="{
@@ -53,12 +51,14 @@
         style="height: 25%"
         class="toolbar__container"
         :selected="selected" />
-      <dom
-        v-if="component"
-        @select="select"
+      <styling
         class="toolbar__container"
-        :element="selected"
-        :template="component.template"/>
+        :selected="motion"
+        :parent="motionParent"
+        @save="save()"
+        @render="doRender($event)"
+        @parent="motionParent = $event"
+        @motion="motion = $event" />
     </div>
     <div class="bottombar">
       <timeline
@@ -67,6 +67,7 @@
         @motion="motion = $event"
         @parent="motionParent = $event"
         @update="data = $event, progress = $refs.component.progress, Object.assign($refs.component, JSON.parse(JSON.stringify($event))), doScroll()"
+        :progress="$refs.component ? $refs.component.progress : 0"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
         :data="data"/>
     </div>
