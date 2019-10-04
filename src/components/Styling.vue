@@ -42,11 +42,13 @@
       </div>
       <div>
         <input
+          @keyup.enter.native="append(newKey, newValue)"
           placeholder="Key"
           v-model="newKey"
           style="width: calc(40% - 9px); float: left; margin: 0 3px 0 0; border: 0; padding: 5px 3px;"
         />
         <input
+          @keyup.enter.native="append(newKey, newValue)"
           placeholder="Value"
           v-model="newValue"
           style="width: calc(40% - 9px); float: left; margin: 0 0 0 3px; border: 0; padding: 5px 3px;"
@@ -112,6 +114,8 @@ export default {
       }
     },
     append(key, value) {
+      this.newKey = ''
+      this.newValue = ''
       let obj = this.selected
       if (this.selected && this.selected.style)
         obj = this.selected.style

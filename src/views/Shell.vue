@@ -1,7 +1,7 @@
 <template>
   <div class="shell" id="shell" :key="render">
     <div class="topbar" id="topbar">
-      <button style="margin-right: 20px" @click="save()">Save</button>
+      <button style="margin-right: 20px" @click="save(true)">Save</button>
       <button @click="selecting=!selecting">{{ selecting ? 'Stop highlighting' : 'Selection higlight'}}</button>
       <button @click="events=!events">{{ events ? 'Allow click through' : 'Dissallow click through'}}</button>
       <span v-if="store.current" style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
@@ -17,7 +17,7 @@
         :element="selected"
         :template="component.template"/>
     </div>
-    <div class="playground" id="playground">
+    <div class="playground" id="playground" :key="'render' + renderKey">
       <div v-if="file" class="window" id="window" :class="{
         selecting,
         'all-events': events
@@ -95,6 +95,7 @@ export default {
   },
   data() {
     return {
+      renderKey: 0,
       motion: null,
       motionParent: null,
       selecting: false,
@@ -247,7 +248,6 @@ export default {
       }
     },
     doScroll() {
-      console.log(this.$refs.component.progress, this.progress)
       document.querySelector('.window').dispatchEvent(new Event('scroll'))
       document.querySelector('.window').scrollTo(0, this.progress)
     },
@@ -270,7 +270,7 @@ export default {
         }
       })
     },
-    save() {
+    save(saveFile = false) {
       this.progress = this.$refs.component.progress
       if (
         this.store.current &&
@@ -293,7 +293,12 @@ export default {
           })
           eval('data = function () { return ' + tosource(this.data) + ' }')
           comp.data = data
-          encoder(path, comp, this.style)
+          if (saveFile) {
+            encoder(path, comp, this.style)
+          }
+          this.$nextTick(() => {
+            this.$refs.component.init()
+          })
         } else {
           this.file = null
         }
