@@ -1,7 +1,7 @@
 <template>
   <div>
     <label>Layers</label>
-    <node :element="element" @select="$emit('select', $event)" :node="node"/>
+    <node :element="element" @select="$emit('select', $event)" :node="node" />
   </div>
 </template>
 

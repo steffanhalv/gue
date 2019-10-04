@@ -1,13 +1,27 @@
 <template>
   <ul v-if="node">
     <li v-if="children.length">
-      <span :class="current(node.dataset.identifier) ? 'current' : ''" @click="$emit('select', node)" v-if="node.tagName !== 'BODY'">
-      {{ node.tagName }} {{ node.dataset.identifier }}
+      <span
+        :class="current(node.dataset.identifier) ? 'current' : ''"
+        @click="$emit('select', node)"
+        v-if="node.tagName !== 'BODY'"
+      >
+        {{ node.tagName }} {{ node.dataset.identifier }}
       </span>
-      <node :element="element" @select="$emit('select', $event)" :node="child" v-for="(child, i) in children" :key="i"/>
+      <node
+        :element="element"
+        @select="$emit('select', $event)"
+        :node="child"
+        v-for="(child, i) in children"
+        :key="i"
+      />
     </li>
     <li v-else-if="node.tagName !== 'BODY'">
-      <span :class="current(node.dataset.identifier) ? 'current' : ''" @click="$emit('select', node)">{{ node.tagName }} {{ node.dataset.identifier }}</span>
+      <span
+        :class="current(node.dataset.identifier) ? 'current' : ''"
+        @click="$emit('select', node)"
+        >{{ node.tagName }} {{ node.dataset.identifier }}</span
+      >
     </li>
   </ul>
 </template>
@@ -68,7 +82,8 @@ label {
 ul {
   list-style-type: none;
   margin: 0;
-  padding: 0 0 0 15px;  text-align: left;
+  padding: 0 0 0 15px;
+  text-align: left;
   cursor: pointer;
 }
 li span {

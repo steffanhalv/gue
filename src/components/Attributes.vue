@@ -2,16 +2,14 @@
   <div class="styles">
     <label>Attributes</label>
     <div v-if="store.current" style="color: #eee">
-      <div
-        :key="attribute"
-        v-for="(value, attribute) in selected"
-      >
+      <div :key="attribute" v-for="(value, attribute) in selected">
         <span style="width: 50%; text-align: left; float: left; margin: 0">
           {{ attribute }}
         </span>
         <input
           style="width: calc(50% - 6px); float: right; margin: 0; border: 0; padding: 5px 3px;"
-          v-model="selected[attribute]" />
+          v-model="selected[attribute]"
+        />
       </div>
     </div>
   </div>

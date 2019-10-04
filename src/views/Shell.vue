@@ -2,10 +2,18 @@
   <div class="shell" id="shell" :key="render">
     <div class="topbar" id="topbar">
       <button style="margin-right: 20px" @click="save(true)">Save</button>
-      <button @click="selecting=!selecting">{{ selecting ? 'Stop highlighting' : 'Selection higlight'}}</button>
-      <button @click="events=!events">{{ events ? 'Allow click through' : 'Dissallow click through'}}</button>
-      <span v-if="store.current" style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
-        {{ $refs.component ? $refs.component.progress + ' | ' : '' }} {{ store.current.path }} | {{ store.current.file }}
+      <button @click="selecting = !selecting">
+        {{ selecting ? 'Stop highlighting' : 'Selection higlight' }}
+      </button>
+      <button @click="events = !events">
+        {{ events ? 'Allow click through' : 'Dissallow click through' }}
+      </button>
+      <span
+        v-if="store.current"
+        style="position: absolute; right: 5px; bottom: 5px; font-size: .8em"
+      >
+        {{ $refs.component ? $refs.component.progress + ' | ' : '' }}
+        {{ store.current.path }} | {{ store.current.file }}
       </span>
     </div>
     <div class="toolbar" id="toolbar-left">
@@ -15,13 +23,19 @@
         style="height: 100%"
         class="toolbar__container"
         :element="selected"
-        :template="component.template"/>
+        :template="component.template"
+      />
     </div>
     <div class="playground" id="playground" :key="'render' + renderKey">
-      <div v-if="file" class="window" id="window" :class="{
-        selecting,
-        'all-events': events
-      }">
+      <div
+        v-if="file"
+        class="window"
+        id="window"
+        :class="{
+          selecting,
+          'all-events': events
+        }"
+      >
         <component
           ref="component"
           @gue-select="select"
@@ -50,7 +64,8 @@
         @render="doRender($event)"
         style="height: 25%"
         class="toolbar__container"
-        :selected="selected" />
+        :selected="selected"
+      />
       <styling
         class="toolbar__container"
         :selected="motion"
@@ -58,7 +73,8 @@
         @save="save()"
         @render="doRender($event)"
         @parent="motionParent = $event"
-        @motion="motion = $event" />
+        @motion="motion = $event"
+      />
     </div>
     <div class="bottombar">
       <timeline
@@ -66,10 +82,16 @@
         @timeline="timelineSelection($event)"
         @motion="motion = $event"
         @parent="motionParent = $event"
-        @update="data = $event, progress = $refs.component.progress, Object.assign($refs.component, JSON.parse(JSON.stringify($event))), doScroll()"
+        @update="
+          ;(data = $event),
+            (progress = $refs.component.progress),
+            Object.assign($refs.component, JSON.parse(JSON.stringify($event))),
+            doScroll()
+        "
         :progress="$refs.component ? $refs.component.progress : 0"
         :element="selected && selected[':motion'] ? selected[':motion'] : null"
-        :data="data"/>
+        :data="data"
+      />
     </div>
   </div>
 </template>
@@ -141,7 +163,10 @@ export default {
         x += event.deltaRect.right
         if (target) target.setAttribute('data-x', x)
         document.getElementById('playground').style.width =
-          document.getElementById('shell').offsetWidth - document.getElementById('toolbar-left').offsetWidth - event.rect.width + 'px'
+          document.getElementById('shell').offsetWidth -
+          document.getElementById('toolbar-left').offsetWidth -
+          event.rect.width +
+          'px'
       })
     interact('#toolbar-left')
       .resizable({
@@ -165,7 +190,10 @@ export default {
         x += event.deltaRect.right
         if (target) target.setAttribute('data-x', x)
         document.getElementById('playground').style.width =
-          document.getElementById('shell').offsetWidth - document.getElementById('toolbar-right').offsetWidth - event.rect.width + 'px'
+          document.getElementById('shell').offsetWidth -
+          document.getElementById('toolbar-right').offsetWidth -
+          event.rect.width +
+          'px'
         document.getElementById('playground').style.left =
           event.rect.width + 'px'
       })
@@ -190,7 +218,11 @@ export default {
         target.style.height = event.rect.height + 'px'
         y += event.deltaRect.bottom
         if (target) target.setAttribute('data-y', y)
-        let h = document.getElementById('shell').offsetHeight - document.getElementById('topbar').offsetHeight - event.rect.height + 'px'
+        let h =
+          document.getElementById('shell').offsetHeight -
+          document.getElementById('topbar').offsetHeight -
+          event.rect.height +
+          'px'
         let b = event.rect.height + 'px'
         document.getElementById('playground').style.height = h
         document.getElementById('playground').style.bottom = b
@@ -214,7 +246,8 @@ export default {
     selected: {
       deep: true,
       handler(val) {
-        if (val && this.target) this.target.setAttribute('data-original', JSON.stringify(val))
+        if (val && this.target)
+          this.target.setAttribute('data-original', JSON.stringify(val))
         let t = document.createElement('html')
         t.innerHTML = this.component.template
         t = t.getElementsByTagName('body')[0]
@@ -254,22 +287,24 @@ export default {
     },
     timelineSelection(attr) {
       let query = ':motion":"animations[\'' + attr + '\']"'
-      Array.prototype.slice.call(
-        document.getElementsByClassName('gue-selection')
-      ).forEach(el => {
-        el.classList.remove('gue-selection')
-      })
-      Array.prototype.slice.call(
-        document.querySelectorAll('.window *')
-      ).forEach(el => {
-        if (el.dataset.original) {
-          if (el.dataset.original.indexOf(query) !== -1) {
-            el.classList.add('gue-selection')
-            this.target = el
-            this.selected = JSON.parse(this.target.getAttribute('data-original'))
+      Array.prototype.slice
+        .call(document.getElementsByClassName('gue-selection'))
+        .forEach(el => {
+          el.classList.remove('gue-selection')
+        })
+      Array.prototype.slice
+        .call(document.querySelectorAll('.window *'))
+        .forEach(el => {
+          if (el.dataset.original) {
+            if (el.dataset.original.indexOf(query) !== -1) {
+              el.classList.add('gue-selection')
+              this.target = el
+              this.selected = JSON.parse(
+                this.target.getAttribute('data-original')
+              )
+            }
           }
-        }
-      })
+        })
     },
     save(saveFile = false) {
       this.progress = this.$refs.component.progress
@@ -326,13 +361,13 @@ export default {
       /* eslint-enable */
     },
     mouseover(e) {
-      Array.prototype.slice.call(
-        document.getElementsByClassName('gue-element-hover')
-      ).forEach(el => {
-        if (el && typeof el !== 'undefined') {
-          el.classList.remove('gue-element-hover')
-        }
-      })
+      Array.prototype.slice
+        .call(document.getElementsByClassName('gue-element-hover'))
+        .forEach(el => {
+          if (el && typeof el !== 'undefined') {
+            el.classList.remove('gue-element-hover')
+          }
+        })
       if (e.target) {
         e.target.classList.add('gue-element-hover')
       }
@@ -398,16 +433,17 @@ export default {
 
 <style>
 .window.all-events * {
-  pointer-events: all!important;
+  pointer-events: all !important;
 }
 .window.selecting .gue-element-hover {
   cursor: pointer;
-  background-color: rgb(72, 137, 235, .1);
-  opacity: .9!important;
+  background-color: rgb(72, 137, 235, 0.1);
+  opacity: 0.9 !important;
 }
-.window.selecting .gue-element-hover.gue-selection, .window .gue-selection {
-  background-color: rgb(72, 137, 235, .7);
-  opacity: 1!important;
+.window.selecting .gue-element-hover.gue-selection,
+.window .gue-selection {
+  background-color: rgb(72, 137, 235, 0.7);
+  opacity: 1 !important;
 }
 </style>
 
