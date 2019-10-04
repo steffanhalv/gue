@@ -4,7 +4,7 @@
       <button style="margin-right: 20px" @click="save()">Save</button>
       <button @click="selecting=!selecting">{{ selecting ? 'Stop highlighting' : 'Selection higlight'}}</button>
       <button @click="events=!events">{{ events ? 'Allow click through' : 'Dissallow click through'}}</button>
-      <span style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
+      <span v-if="store.current" style="position: absolute; right: 5px; bottom: 5px; font-size: .8em">
         {{ $refs.component ? $refs.component.progress + ' | ' : '' }} {{ store.current.path }} | {{ store.current.file }}
       </span>
     </div>
