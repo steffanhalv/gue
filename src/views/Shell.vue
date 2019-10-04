@@ -250,6 +250,7 @@ export default {
     doScroll() {
       document.querySelector('.window').dispatchEvent(new Event('scroll'))
       document.querySelector('.window').scrollTo(0, this.progress)
+      this.$refs.component.init()
     },
     timelineSelection(attr) {
       let query = ':motion":"animations[\'' + attr + '\']"'

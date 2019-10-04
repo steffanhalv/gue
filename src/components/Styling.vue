@@ -2,7 +2,7 @@
   <div class="styles" :key="renderKey" :class="selected && selected.motion ? 'timeline-wrapper' : 'keypoint-wrapper'">
     <label v-if="selected && selected.motion"><b>Timeline</b></label>
     <label
-      style="cursor: pointer"
+      style="cursor: pointer; float: left; width: auto;"
       @click="$emit('motion', selected), $emit('parent', parent)"
       v-else-if="selected && typeof selected.index !== 'undefined'">
       <label style="cursor: pointer" v-if="!nest" @click="$emit('motion', parent), $emit('parent', null)">
@@ -10,13 +10,10 @@
       </label>
       <b>Keypoint {{ selected.index }}</b>
     </label>
+    <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: auto; float: right; margin: 8px 10px 0; padding: 5px" class="add-btn" @click="removeMotion()">
+      Delete
+    </button>
     <label v-else>Style</label>
-    <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="sort()">
-      Sort
-    </button>
-    <button v-if="selected && !selected.motion && typeof selected.index !== 'undefined'" style="width: 100px; margin: 3px" class="add-btn" @click="removeMotion()">
-      Delete key
-    </button>
     <div v-if="store.current" style="color: #eee" class="style-keys">
       <div
         :key="key"
@@ -42,13 +39,13 @@
       </div>
       <div>
         <input
-          @keyup.enter.native="append(newKey, newValue)"
+          @keyup.enter="append(newKey, newValue)"
           placeholder="Key"
           v-model="newKey"
           style="width: calc(40% - 9px); float: left; margin: 0 3px 0 0; border: 0; padding: 5px 3px;"
         />
         <input
-          @keyup.enter.native="append(newKey, newValue)"
+          @keyup.enter="append(newKey, newValue)"
           placeholder="Value"
           v-model="newValue"
           style="width: calc(40% - 9px); float: left; margin: 0 0 0 3px; border: 0; padding: 5px 3px;"
@@ -71,6 +68,9 @@
     </div>
     <button style="width: 100px; margin: 3px" class="add-btn" @click="add()" v-if="selected && selected.motion">
       Add key
+    </button>
+    <button style="width: 100px; margin: 3px" class="add-btn" @click="sort()" v-if="selected && selected.motion">
+      Sort
     </button>
   </div>
 </template>
