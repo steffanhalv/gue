@@ -5,11 +5,7 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-import storage from './code/storage'
-import menu from './code/menu'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
-menu(storage)
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -28,7 +24,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
-      backgroundColor: '#555'
+      backgroundColor: '#eee'
     }
   })
 
