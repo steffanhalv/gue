@@ -1,18 +1,22 @@
 <template>
   <div id="app">
+    <div style="width: 20%; float: right">
+      <div :key="'log-' + i" v-for="(log, i) in $logic.log">
+        <input style="width: 100%" :value="log" readonly>
+      </div>
+    </div>
     <iframe
-      style="border: none; width: 100%; height: 100%"
-      src="http://localhost:8080"
+      v-if="$logic.load === 100"
+      style="border: none; width: 80%; height: 100%"
+      :src="$logic.local"
     ></iframe>
+    <div v-else>Loading {{ $logic.load }}%</div>
   </div>
 </template>
 
 <script>
-import gid from '@/logic/add_gid'
 export default {
-  created() {
-    gid()
-  }
+  created() {}
 }
 </script>
 

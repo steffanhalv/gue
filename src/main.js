@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
+import logic from '@/logic/startup'
 
+Vue.prototype.$logic = logic
 Vue.config.productionTip = false
 
 new Vue({

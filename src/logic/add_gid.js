@@ -1,10 +1,7 @@
 import fs from 'fs'
 
 // Add data-gid="" to all elements
-export default (
-  path = '/Users/steffan/Desktop/git/gue/example/src/App.vue',
-  index = 0
-) => {
+export default (path = '', index = 0) => {
   let content = fs.readFileSync(path, { encoding: 'utf8' })
   let dom = document.createElement('html')
   dom.innerHTML = content
