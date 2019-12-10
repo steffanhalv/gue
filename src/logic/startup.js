@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import gid from '@/logic/add_gid'
+import modify from '@/logic/modify'
+import update from '@/logic/update'
 import { spawn } from 'child_process'
 
 export default new Vue({
@@ -16,11 +17,28 @@ export default new Vue({
     }
   },
   created() {
-    this.template = gid(this.path + 'src/App.vue')
+    this.template = modify(this.path + 'src/App.vue')
+    // update(this.path + 'src/App.vue', this.template.template)
     this.serve()
     console.log('well')
   },
   methods: {
+    fix() {
+      let ls = spawn('cd ' + this.path + '; npm run lint -- --fix', [], {
+        shell: true
+      })
+      ls.stdout.on('data', data => {
+        data = data.toString()
+        this.log.unshift(data)
+      })
+      ls.stderr.on('data', data => {
+        data = data.toString()
+        this.log.unshift(data)
+      })
+      ls.on('close', code => {
+        this.log.unshift(`child process exited with code ${code}`)
+      })
+    },
     serve() {
       this.serving = true
       this.server = spawn('cd ' + this.path + '; npm run serve', [], {

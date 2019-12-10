@@ -1,13 +1,17 @@
 <template>
   <div id="app">
-    <div style="width: 20%; float: right">
-      <div :key="'log-' + i" v-for="(log, i) in $logic.log">
-        <input style="width: 100%" :value="log" readonly>
+    <div style="height: 150px; overflow: auto">
+      <div :key="'log-' + i" v-for="(log, i) in $logic.log.slice(0, 6)">
+        <span
+          style="font-family: monospace; display: inline-block; text-align: left; white-space: nowrap; width: 100%"
+        >
+          {{ '$: ' + log }}
+        </span>
       </div>
     </div>
     <iframe
       v-if="$logic.load === 100"
-      style="border: none; width: 80%; height: 100%"
+      style="background: white; border: none; width: 100%; height: calc(100% - 150px)"
       :src="$logic.local"
     ></iframe>
     <div v-else>Loading {{ $logic.load }}%</div>
