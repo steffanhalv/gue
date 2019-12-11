@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
-import logic from '@/logic/startup'
+import server from '@/logic/server'
+import vdom from '@/logic/vdom'
 
-Vue.prototype.$logic = logic
+Vue.prototype.$server = server
+Vue.prototype.$vdom = vdom
 Vue.config.productionTip = false
 
 new Vue({
