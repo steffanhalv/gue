@@ -1,6 +1,8 @@
 import Vue from 'vue'
-import modify from '@/logic/modify'
-import update from '@/logic/update'
+import html_raw_to_array from '@/logic/html_raw_to_array'
+import html_array_to_obj from '@/logic/html_array_to_obj'
+import html_obj_to_raw from '@/logic/html_obj_to_raw'
+import fs from 'fs'
 import { spawn } from 'child_process'
 
 export default new Vue({
@@ -12,15 +14,22 @@ export default new Vue({
       local: '',
       network: '',
       load: 0,
-      template: '',
+      vdom: '',
       log: []
     }
   },
   created() {
-    this.template = modify(this.path + 'src/App.vue')
-    // update(this.path + 'src/App.vue', this.template.template)
+    let content = fs.readFileSync(this.path + 'src/App.vue', { encoding: 'utf8' })
+    let arr = html_raw_to_array(content)
+    this.vdom = html_array_to_obj(arr)
+    console.log('vdom', this.vdom)
+    let raw = html_obj_to_raw(this.vdom)
+    console.log(raw)
+    fs.writeFileSync(this.path + 'src/App.vue', raw, {
+      encoding: 'utf8',
+      flag: 'w'
+    })
     this.serve()
-    console.log('well')
   },
   methods: {
     fix() {
