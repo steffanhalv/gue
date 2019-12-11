@@ -1,4 +1,4 @@
-export default (content = '') => {
+export default (raw = '') => {
   // Convert raw text to array, divided by text & elements
   let arr = []
   let text = ''
@@ -26,8 +26,8 @@ export default (content = '') => {
     'hr',
     'meta'
   ]
-  for (var i = 0; i < content.length; i++) {
-    let char = content.charAt(i)
+  for (var i = 0; i < raw.length; i++) {
+    let char = raw.charAt(i)
     if (char === '<' && !(isSingleQuote || isDoubleQuote)) {
       if (text && !isTag)
         arr.push({

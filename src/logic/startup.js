@@ -23,6 +23,9 @@ export default new Vue({
     this.vdom = vdom.parse(content)
     console.log('vdom', this.vdom)
     let raw = vdom.stringify(this.vdom)
+    vdom.each(this.vdom, node => {
+      vdom.attrFromTag(node)
+    })
     console.log(raw)
     fs.writeFileSync(this.path + 'src/App.vue', raw, {
       encoding: 'utf8',

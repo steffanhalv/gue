@@ -1,16 +1,14 @@
-export default obj => {
+import vdomEach from './vdom_each'
+export default vdom => {
   let raw = ''
-  let appendToRaw = nodes => {
-    nodes.forEach(node => {
-      if (typeof node === 'string') {
-        raw += node
-      } else {
-        raw += node.start
-        appendToRaw(node.children)
-        raw += node.end
-      }
-    })
-  }
-  appendToRaw(obj)
+  vdomEach(
+    vdom,
+    node => {
+      raw += node.start
+    },
+    node => {
+      raw += node.end
+    }
+  )
   return raw
 }
