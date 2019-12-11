@@ -4,16 +4,12 @@ import { spawn } from 'child_process'
 export default new Vue({
   data() {
     return {
-      root: '/Users/steffan/Desktop/git/gue/example/',
+      root: '',
       local: '',
       network: '',
       load: 0,
       log: []
     }
-  },
-  created() {
-    this.exec('cd ' + this.root + '; npm run lint -- --fix')
-    if (this.load !== 100) this.exec('cd ' + this.root + '; npm run serve')
   },
   watch: {
     log() {
@@ -23,6 +19,12 @@ export default new Vue({
     }
   },
   methods: {
+    serve() {
+      if (this.load !== 100) this.exec('cd ' + this.root + '; npm run serve')
+    },
+    fix() {
+      this.exec('cd ' + this.root + '; npm run lint -- --fix')
+    },
     exec(cmd) {
       let ls = spawn(cmd, [], {
         shell: true

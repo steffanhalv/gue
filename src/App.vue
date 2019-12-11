@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <button @click="add">Add bg color</button>
-    <button @click="remove">Remove bg color</button>
+    <button style="position: absolute; right: 120px; top: 10px;" @click="add">Add bg color</button>
+    <button style="position: absolute; right: 5px; top: 10px;" @click="remove">Remove bg color</button>
     <div style="height: 150px; overflow: auto">
       <div :key="'log-' + i" v-for="(log, i) in $server.log">
         <span
@@ -27,17 +27,26 @@ export default {
     return {}
   },
   created() {
-    this.$vdom.file = 'src/App.vue'
+    // Serve with hotreload from anywhere
+    this.$server.root = '/Users/steffan/Desktop/git/gue/example/'
+    this.$server.fix() // Fix linting
+    this.$server.serve() // Run hotreload server
+    console.log('Log', this.$server.log)
+
+    // Load any vue file from anywhere
     this.$vdom.root = '/Users/steffan/Desktop/git/gue/example/'
-    this.$vdom.load() // Insert data-id tags to file and vdom
+    this.$vdom.file = 'src/App.vue'
+    this.$vdom.load() // Load and parse the vue file into virtual dom & append data-gid for identification
     this.$vdom.unload() // Remove data-id tags to file and vdom
 
+    // Explore the virtual dom
     console.log('Template', this.$vdom.template())
     console.log('Script', this.$vdom.script())
     console.log('Style', this.$vdom.style())
   },
   methods: {
     add() {
+      // Manipulate the dom
       let app = this.$vdom.template().children[1]
       let attr = vdom.attrFromTag(app)
       attr = vdom.attrSet(attr, 'style="background: red"')
@@ -45,6 +54,7 @@ export default {
       this.$vdom.save()
     },
     remove() {
+      // Reset your changes
       let app = this.$vdom.template().children[1]
       let attr = vdom.attrFromTag(app)
       attr = vdom.attrRemove(attr, 'style')
