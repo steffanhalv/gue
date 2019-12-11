@@ -1,6 +1,6 @@
-export default (obj) => {
+export default obj => {
   let raw = ''
-  let appendToRaw = (nodes) => {
+  let appendToRaw = nodes => {
     nodes.forEach(node => {
       if (typeof node === 'string') {
         raw += node

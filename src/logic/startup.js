@@ -1,7 +1,5 @@
 import Vue from 'vue'
-import html_raw_to_array from '@/logic/html_raw_to_array'
-import html_array_to_obj from '@/logic/html_array_to_obj'
-import html_obj_to_raw from '@/logic/html_obj_to_raw'
+import vdom from '@/logic/vdom'
 import fs from 'fs'
 import { spawn } from 'child_process'
 
@@ -19,19 +17,24 @@ export default new Vue({
     }
   },
   created() {
-    let content = fs.readFileSync(this.path + 'src/App.vue', { encoding: 'utf8' })
-    let arr = html_raw_to_array(content)
-    this.vdom = html_array_to_obj(arr)
+    let content = fs.readFileSync(this.path + 'src/App.vue', {
+      encoding: 'utf8'
+    })
+    this.vdom = vdom.parse(content)
     console.log('vdom', this.vdom)
-    let raw = html_obj_to_raw(this.vdom)
+    let raw = vdom.stringify(this.vdom)
     console.log(raw)
     fs.writeFileSync(this.path + 'src/App.vue', raw, {
       encoding: 'utf8',
       flag: 'w'
     })
+    this.fix()
     this.serve()
   },
   methods: {
+    unloadLog() {
+      this.log = this.log.slice(0, 6)
+    },
     fix() {
       let ls = spawn('cd ' + this.path + '; npm run lint -- --fix', [], {
         shell: true
@@ -39,13 +42,16 @@ export default new Vue({
       ls.stdout.on('data', data => {
         data = data.toString()
         this.log.unshift(data)
+        this.unloadLog()
       })
       ls.stderr.on('data', data => {
         data = data.toString()
         this.log.unshift(data)
+        this.unloadLog()
       })
       ls.on('close', code => {
         this.log.unshift(`child process exited with code ${code}`)
+        this.unloadLog()
       })
     },
     serve() {
@@ -56,6 +62,7 @@ export default new Vue({
       this.server.stdout.on('data', data => {
         data = data.toString()
         this.log.unshift(data)
+        this.unloadLog()
         if (data.indexOf('Local:' !== -1)) {
           data = data.split('Local:')[1]
           if (data && data.indexOf('- Network: ' !== -1)) {
@@ -70,6 +77,7 @@ export default new Vue({
       this.server.stderr.on('data', data => {
         data = data.toString()
         this.log.unshift(data)
+        this.unloadLog()
         if (data.indexOf('%') !== -1) {
           data = Number(data.split('%')[0].replace(/\s/g, ''))
           if (data > this.load) {
@@ -79,6 +87,7 @@ export default new Vue({
       })
       this.server.on('close', code => {
         this.log.unshift(`child process exited with code ${code}`)
+        this.unloadLog()
         this.serving = false
       })
     }

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div style="height: 150px; overflow: auto">
-      <div :key="'log-' + i" v-for="(log, i) in $logic.log.slice(0, 6)">
+      <div :key="'log-' + i" v-for="(log, i) in $logic.log">
         <span
           style="font-family: monospace; display: inline-block; text-align: left; white-space: nowrap; width: 100%"
         >
