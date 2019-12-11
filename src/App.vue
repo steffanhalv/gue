@@ -1,7 +1,11 @@
 <template>
   <div id="app">
-    <button style="position: absolute; right: 120px; top: 10px;" @click="add">Add bg color</button>
-    <button style="position: absolute; right: 5px; top: 10px;" @click="remove">Remove bg color</button>
+    <button style="position: absolute; right: 120px; top: 10px;" @click="add">
+      Add bg color
+    </button>
+    <button style="position: absolute; right: 5px; top: 10px;" @click="remove">
+      Remove bg color
+    </button>
     <div style="height: 150px; overflow: auto">
       <div :key="'log-' + i" v-for="(log, i) in $server.log">
         <span
