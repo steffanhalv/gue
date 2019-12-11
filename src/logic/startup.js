@@ -21,12 +21,33 @@ export default new Vue({
       encoding: 'utf8'
     })
     this.vdom = vdom.parse(content)
-    console.log('vdom', this.vdom)
-    let raw = vdom.stringify(this.vdom)
-    vdom.each(this.vdom, node => {
-      vdom.attrFromTag(node)
+    let i = 0
+    this.vdom.forEach(node => {
+      if (
+        node.start
+          .toLowerCase()
+          .replace(/ /g, '')
+          .indexOf('<template') === 0
+      ) {
+        let id = i++
+        node.id = id
+        let attributes = vdom.attrFromTag(node)
+        attributes = vdom.attrRemove(attributes, 'data-gid="' + id + '"') // Remove temp ids
+        // attributes = vdom.attrSet(attributes, 'data-gid="' + id + '"') // Add temp ids
+        node.start = vdom.attrToTag(attributes)
+        vdom.each(node.children, node => {
+          let id = i++
+          node.id = id
+          if (node.tag) {
+            attributes = vdom.attrFromTag(node)
+            attributes = vdom.attrRemove(attributes, 'data-gid') // Remove temp ids
+            // attributes = vdom.attrSet(attributes, 'data-gid="' + id + '"') // Add temp ids
+            node.start = vdom.attrToTag(attributes)
+          }
+        })
+      }
     })
-    console.log(raw)
+    let raw = vdom.stringify(this.vdom)
     fs.writeFileSync(this.path + 'src/App.vue', raw, {
       encoding: 'utf8',
       flag: 'w'

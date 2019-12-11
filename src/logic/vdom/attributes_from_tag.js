@@ -1,12 +1,13 @@
 export default tag => {
   let arr = []
+  // Convert raw text to array, divided by spaces (treats multispaces as one and escape quotes)
   if (typeof tag.start === 'string' && tag.tag) {
     let raw = tag.start.slice(1, -1)
+    let hasEndingSlash = false
     while (raw[raw.length - 1] === ' ' || raw[raw.length - 1] === '/') {
+      if (raw[raw.length - 1] === '/') hasEndingSlash = true
       raw = raw.slice(0, -1)
     }
-
-    // Convert raw text to array, divided by spaces (treats multispaces as one and escape quotes)
     let text = ''
     let isSingleQuote = false
     let isDoubleQuote = false
@@ -32,9 +33,7 @@ export default tag => {
       }
     }
     arr.push(text)
+    if (hasEndingSlash) arr.push('/')
   }
-
-  console.log(arr)
-
   return arr
 }
