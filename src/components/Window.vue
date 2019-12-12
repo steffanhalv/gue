@@ -44,7 +44,9 @@ export default {
         top: this.getTop(this.pos ? this.pos.top : 0),
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
-        left: this.getLeft(this.pos ? this.pos.left : 0)
+        left: this.getLeft(this.pos ? this.pos.left : 0),
+        width: this.width ? this.width : 'auto',
+        height: this.height ? this.height : 'auto'
       }
     },
     getTop(pos) {
@@ -109,7 +111,8 @@ export default {
   top: 0;
   width: calc(100% - 10px);
   height: 5px;
-  background-color: green;
+  background-color: rgb(115, 115, 115);
+  cursor: ns-resize;
 }
 .border-right {
   position: absolute;
@@ -117,7 +120,8 @@ export default {
   top: 5px;
   width: 5px;
   height: calc(100% - 10px);
-  background-color: green;
+  background-color: rgb(115, 115, 115);
+  cursor: ew-resize;
 }
 .border-bottom {
   position: absolute;
@@ -125,7 +129,8 @@ export default {
   bottom: 0;
   width: calc(100% - 10px);
   height: 5px;
-  background-color: green;
+  background-color: rgb(100, 100, 100);
+  cursor: ns-resize;
 }
 .border-left {
   position: absolute;
@@ -133,6 +138,13 @@ export default {
   top: 5px;
   width: 5px;
   height: calc(100% - 10px);
-  background-color: green;
+  background-color: rgb(100, 100, 100);
+  cursor: ew-resize;
+}
+.border-top:hover,
+.border-right:hover,
+.border-bottom:hover,
+.border-left:hover {
+  background-color: rgb(56, 172, 244);
 }
 </style>

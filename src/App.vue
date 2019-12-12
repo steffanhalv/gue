@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <window
+      id="tools"
       @resize="resize++"
       :resize="resize"
-      id="tools"
       :pos="{
         top: 0,
         right: 'calc(100% - 100px)',
@@ -13,17 +13,17 @@
       >Tools</window
     >
     <window
+      id="playground"
       @resize="resize++"
       :resize="resize"
-      id="playground"
       width="300px"
       :pos="{ top: 0, right: '#preview', bottom: '#timeline', left: '#tools' }"
       >Playground</window
     >
     <window
+      id="preview"
       @resize="resize++"
       :resize="resize"
-      id="preview"
       :pos="{
         top: 0,
         right: '300px',
@@ -33,16 +33,16 @@
       >Preview</window
     >
     <window
+      id="styles"
       @resize="resize++"
       :resize="resize"
-      id="styles"
       :pos="{ top: 0, right: 0, bottom: '#layers', left: '#preview' }"
       >Styles</window
     >
     <window
+      id="layers"
       @resize="resize++"
       :resize="resize"
-      id="layers"
       :pos="{
         top: 'calc(100% - 400px)',
         right: 0,
@@ -52,9 +52,9 @@
       >Layers</window
     >
     <window
+      id="timeline"
       @resize="resize++"
       :resize="resize"
-      id="timeline"
       :pos="{ top: 'calc(100% - 200px)', right: 0, bottom: 0, left: 0 }"
       >Timeline</window
     >
