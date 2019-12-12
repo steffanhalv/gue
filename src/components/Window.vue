@@ -1,18 +1,22 @@
 <template>
   <div :id="identity" class="window" :style="style">
-    <div class="border-top"></div>
-    <div class="border-right"></div>
-    <div class="border-bottom"></div>
-    <div class="border-left"></div>
+    <div v-if="hooks.top" class="border-top"></div>
+    <div v-if="hooks.right" class="border-right"></div>
+    <div v-if="hooks.bottom" class="border-bottom"></div>
+    <div v-if="hooks.left" class="border-left"></div>
+    <button @click="remove">Delete</button>
     <slot />
   </div>
 </template>
 
 <script>
+import { isArray } from 'util'
 export default {
-  props: ['id', 'pos', 'resize', 'width', 'height'],
+  props: ['id', 'position', 'links', 'resize', 'width', 'height', 'update'],
   data() {
     return {
+      pos: null,
+      hooks: null,
       style: {
         top: this.getTop(this.pos ? this.pos.top : 0),
         right: this.getRight(this.pos ? this.pos.right : 0),
@@ -23,7 +27,12 @@ export default {
       }
     }
   },
+  created() {
+    this.pos = this.position
+    this.hooks = this.links
+  },
   mounted() {
+    this.render()
     setTimeout(() => {
       this.render()
     })
@@ -36,9 +45,43 @@ export default {
   watch: {
     resize() {
       this.render()
+    },
+    update(el) {
+      Object.keys(this.hooks).forEach(key => {
+        if (isArray(this.hooks[key])) {
+          if (this.hooks[key].length === 1 && this.hooks[key][0] === '#' + el.id) {
+            this.hooks[key] = el.hooks[key]
+            this.pos[key] = el.pos[key]
+          } else {
+            let arr = []
+            this.hooks[key].forEach(id => {
+              if (id !== '#' + el.id) {
+                arr.push(id)
+              }
+            })
+            this.hooks[key] = arr
+            if (this.pos[key] === '#' + el.id) {
+              this.pos[key] = this.hooks[key][0]
+            }
+          }
+        } else if (this.hooks[key] === '#' + el.id) {
+          this.hooks[key] = el.hooks[key]
+          this.pos[key] = el.pos[key]
+        }
+      })
+      this.render()
     }
   },
   methods: {
+    remove() {
+      this.$emit('update', {
+        id: this.id,
+        pos: this.pos,
+        hooks: this.hooks
+      })
+      this.$destroy()
+      this.$el.parentNode.removeChild(this.$el)
+    },
     render() {
       this.style = {
         top: this.getTop(this.pos ? this.pos.top : 0),
