@@ -1,69 +1,80 @@
 <template>
   <div id="app">
-    <button style="position: absolute; right: 120px; top: 10px;" @click="add">
-      Add bg color
-    </button>
-    <button style="position: absolute; right: 5px; top: 10px;" @click="remove">
-      Remove bg color
-    </button>
-    <div style="height: 150px; overflow: auto">
-      <div :key="'log-' + i" v-for="(log, i) in $server.log">
-        <span
-          style="font-family: monospace; display: inline-block; text-align: left; white-space: nowrap; width: 100%"
-        >
-          {{ '$: ' + log }}
-        </span>
-      </div>
-    </div>
-    <iframe
-      v-if="$server.load === 100"
-      style="background: white; border: none; width: 100%; height: calc(100% - 150px)"
-      :src="$server.local"
-    ></iframe>
-    <div v-else>Loading {{ $server.load }}%</div>
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="tools"
+      :pos="{
+        top: 0,
+        right: 'calc(100% - 100px)',
+        bottom: '#timeline',
+        left: 0
+      }"
+      >Tools</window
+    >
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="playground"
+      width="300px"
+      :pos="{ top: 0, right: '#preview', bottom: '#timeline', left: '#tools' }"
+      >Playground</window
+    >
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="preview"
+      :pos="{
+        top: 0,
+        right: '300px',
+        bottom: '#timeline',
+        left: '#playground'
+      }"
+      >Preview</window
+    >
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="styles"
+      :pos="{ top: 0, right: 0, bottom: '#layers', left: '#preview' }"
+      >Styles</window
+    >
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="layers"
+      :pos="{
+        top: 'calc(100% - 400px)',
+        right: 0,
+        bottom: '#timeline',
+        left: '#preview'
+      }"
+      >Layers</window
+    >
+    <window
+      @resize="resize++"
+      :resize="resize"
+      id="timeline"
+      :pos="{ top: 'calc(100% - 200px)', right: 0, bottom: 0, left: 0 }"
+      >Timeline</window
+    >
   </div>
 </template>
 
 <script>
-import vdom from '@/logic/vdom/index'
+import Window from '@/components/Window'
 export default {
+  components: {
+    Window
+  },
   data() {
-    return {}
+    return {
+      resize: 0
+    }
   },
   created() {
-    // Serve with hotreload from anywhere
-    this.$server.root = '/Users/steffan/Desktop/git/gue/example/'
-    this.$server.fix() // Fix linting
-    this.$server.serve() // Run hotreload server
-    console.log('Log', this.$server.log)
-
-    // Load any vue file from anywhere
-    this.$vdom.root = '/Users/steffan/Desktop/git/gue/example/'
-    this.$vdom.file = 'src/App.vue'
-    this.$vdom.load() // Load and parse the vue file into virtual dom & append data-gid for identification
-    this.$vdom.unload() // Remove data-id tags to file and vdom
-
-    // Explore the virtual dom
-    console.log('Template', this.$vdom.template())
-    console.log('Script', this.$vdom.script())
-    console.log('Style', this.$vdom.style())
-  },
-  methods: {
-    add() {
-      // Manipulate the dom
-      let app = this.$vdom.template().children[1]
-      let attr = vdom.attrFromTag(app)
-      attr = vdom.attrSet(attr, 'style="background: red"')
-      app.start = vdom.attrToTag(attr)
-      this.$vdom.save()
-    },
-    remove() {
-      // Reset your changes
-      let app = this.$vdom.template().children[1]
-      let attr = vdom.attrFromTag(app)
-      attr = vdom.attrRemove(attr, 'style')
-      app.start = vdom.attrToTag(attr)
-      this.$vdom.save()
+    window.onresize = () => {
+      this.resize++
     }
   }
 }
