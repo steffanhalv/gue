@@ -35,6 +35,9 @@ export default {
     this.render()
     setTimeout(() => {
       this.render()
+      setTimeout(() => {
+        this.render()
+      })
     })
   },
   computed: {
@@ -49,7 +52,10 @@ export default {
     update(el) {
       Object.keys(this.hooks).forEach(key => {
         if (isArray(this.hooks[key])) {
-          if (this.hooks[key].length === 1 && this.hooks[key][0] === '#' + el.id) {
+          if (
+            this.hooks[key].length === 1 &&
+            this.hooks[key][0] === '#' + el.id
+          ) {
             this.hooks[key] = el.hooks[key]
             this.pos[key] = el.pos[key]
           } else {
@@ -79,8 +85,11 @@ export default {
         pos: this.pos,
         hooks: this.hooks
       })
-      this.$destroy()
-      this.$el.parentNode.removeChild(this.$el)
+      setTimeout(() => {
+        this.$emit('resize')
+        this.$destroy()
+        this.$el.parentNode.removeChild(this.$el)
+      }, 1)
     },
     render() {
       this.style = {
@@ -98,7 +107,9 @@ export default {
         pos[0] === '#' &&
         document.querySelector(pos)
       ) {
-        let top = document.querySelector(pos).getBoundingClientRect().top
+        let top =
+          document.querySelector(pos).getBoundingClientRect().top -
+          this.getParentTop(document.querySelector(pos).parentElement)
         let height = document.querySelector(pos).clientHeight
         return 'calc(' + (top + height) + 'px)'
       } else return pos
@@ -129,10 +140,28 @@ export default {
         pos[0] === '#' &&
         document.querySelector(pos)
       ) {
-        let left = document.querySelector(pos).getBoundingClientRect().left
+        let left =
+          document.querySelector(pos).getBoundingClientRect().left -
+          this.getParentLeft(document.querySelector(pos).parentElement)
         let width = document.querySelector(pos).clientWidth
         return 'calc(' + (left + width) + 'px)'
       } else return pos
+    },
+    getParentLeft(parent) {
+      let left = 0
+      while (parent.parentElement.parentElement) {
+        left += parent.getBoundingClientRect().left
+        parent = parent.parentElement.parentElement
+      }
+      return left
+    },
+    getParentTop(parent) {
+      let top = 0
+      while (parent.parentElement.parentElement) {
+        top += parent.getBoundingClientRect().top
+        parent = parent.parentElement.parentElement
+      }
+      return top
     }
   }
 }
