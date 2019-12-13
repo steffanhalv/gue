@@ -1,9 +1,29 @@
 <template>
   <div :id="identity" class="window" :style="style">
-    <div v-if="hooks.top" class="border-top"></div>
-    <div v-if="hooks.right" class="border-right"></div>
-    <div v-if="hooks.bottom" class="border-bottom"></div>
-    <div v-if="hooks.left" class="border-left"></div>
+    <div
+      v-if="hooks.top"
+      class="border-top"
+      @mousedown="$emit('move', '')"
+      @mouseup=";(dropped = 'top'), $emit('drop', 'self')"
+    ></div>
+    <div
+      v-if="hooks.right"
+      class="border-right"
+      @mousedown="$emit('move', '')"
+      @mouseup=";(dropped = 'right'), $emit('drop', 'self')"
+    ></div>
+    <div
+      v-if="hooks.bottom"
+      class="border-bottom"
+      @mousedown="$emit('move', '')"
+      @mouseup=";(dropped = 'bottom'), $emit('drop', 'self')"
+    ></div>
+    <div
+      v-if="hooks.left"
+      class="border-left"
+      @mousedown="$emit('move', '')"
+      @mouseup=";(dropped = 'left'), $emit('drop', 'self')"
+    ></div>
     <div class="header">
       <button class="remove" @click="remove">
         X
@@ -12,7 +32,7 @@
         style="display: inline-block; color: #666; font-size: .8em; padding-top: 4px"
         >#{{ id }}</span
       >
-      <button class="move">
+      <button class="move" @mousedown="$emit('move', 'self')">
         M
       </button>
     </div>
@@ -25,9 +45,21 @@
 <script>
 import { isArray } from 'util'
 export default {
-  props: ['id', 'position', 'links', 'resize', 'width', 'height', 'update'],
+  props: [
+    'id',
+    'position',
+    'links',
+    'resize',
+    'width',
+    'height',
+    'update',
+    'move',
+    'drop',
+    'parent'
+  ],
   data() {
     return {
+      dropped: '',
       pos: null,
       hooks: null,
       style: {
@@ -35,8 +67,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        minWidth: this.width ? this.width : 'auto',
-        minHeight: this.height ? this.height : 'auto'
+        minWidth: this.width ? this.width : '100px',
+        minHeight: this.height ? this.height : '100px'
       }
     }
   },
@@ -55,6 +87,132 @@ export default {
     }
   },
   watch: {
+    drop() {
+      if (this.drop.id === this.id) {
+        if (this.move && this.move.id !== this.drop.id) {
+          // Remove it
+          this.$emit('update', {
+            id: this.move.id,
+            pos: this.move.pos,
+            hooks: this.move.hooks
+          })
+
+          // Store reference
+          let drop = this.drop
+          let move = this.move
+          let dropped = this.dropped
+
+          // After
+          setTimeout(() => {
+            move.pos.top = drop.pos.top
+            move.pos.right = drop.pos.right
+            move.pos.bottom = drop.pos.bottom
+            move.pos.left = drop.pos.left
+            move.hooks.top = drop.hooks.top
+            move.hooks.right = drop.hooks.right
+            move.hooks.bottom = drop.hooks.bottom
+            move.hooks.left = drop.hooks.left
+
+            this.parent.forEach(el => {
+              Object.keys(el.hooks).forEach(key => {
+                if (el.hooks[key] === '#' + drop.id) {
+                  if (
+                    (dropped === 'top' && key === 'bottom') ||
+                    (dropped === 'bottom' && key === 'top') ||
+                    (dropped === 'right' && key === 'left') ||
+                    (dropped === 'left' && key === 'right')
+                  ) {
+                    el.hooks[key] = '#' + move.id
+                    if (el.pos[key] === '#' + drop.id)
+                      el.pos[key] = '#' + move.id
+                  } else if (
+                    (dropped === 'top' && key !== 'top' && key !== 'bottom') ||
+                    (dropped === 'bottom' &&
+                      key !== 'bottom' &&
+                      key !== 'top') ||
+                    (dropped === 'right' &&
+                      key !== 'right' &&
+                      key !== 'left') ||
+                    (dropped === 'left' && key !== 'left' && key !== 'right')
+                  ) {
+                    el.hooks[key] = ['#' + drop.id, '#' + move.id]
+                  }
+                } else if (isArray(el.hooks[key])) {
+                  let arr = []
+                  let found = false
+                  el.hooks[key].forEach(hook => {
+                    if (hook === '#' + drop.id) {
+                      found = true
+                    } else {
+                      arr.push(hook)
+                    }
+                  })
+                  if (found) {
+                    if (
+                      (dropped === 'top' && key === 'bottom') ||
+                      (dropped === 'bottom' && key === 'top') ||
+                      (dropped === 'right' && key === 'left') ||
+                      (dropped === 'left' && key === 'right')
+                    ) {
+                      arr.push('#' + move.id)
+                      el.hooks[key] = arr
+                      if (el.pos[key] === '#' + drop.id)
+                        el.pos[key] = '#' + move.id
+                    } else if (
+                      (dropped === 'top' &&
+                        key !== 'top' &&
+                        key !== 'bottom') ||
+                      (dropped === 'bottom' &&
+                        key !== 'bottom' &&
+                        key !== 'top') ||
+                      (dropped === 'right' &&
+                        key !== 'right' &&
+                        key !== 'left') ||
+                      (dropped === 'left' && key !== 'left' && key !== 'right')
+                    ) {
+                      arr.push('#' + drop.id)
+                      arr.push('#' + move.id)
+                      el.hooks[key] = arr
+                    }
+                  }
+                }
+              })
+            })
+
+            if (dropped === 'top') {
+              move.pos.bottom = '#' + drop.id
+              drop.pos.top = '#' + move.id
+              move.hooks.bottom = '#' + drop.id
+              drop.hooks.top = '#' + move.id
+            } else if (dropped === 'right') {
+              move.pos.left = '#' + drop.id
+              drop.pos.right = '#' + move.id
+              move.hooks.left = '#' + drop.id
+              drop.hooks.right = '#' + move.id
+            } else if (dropped === 'bottom') {
+              move.pos.top = '#' + drop.id
+              drop.pos.bottom = '#' + move.id
+              move.hooks.top = '#' + drop.id
+              drop.hooks.bottom = '#' + move.id
+            } else if (dropped === 'left') {
+              move.pos.right = '#' + drop.id
+              drop.pos.left = '#' + move.id
+              move.hooks.right = '#' + drop.id
+              drop.hooks.left = '#' + move.id
+            }
+
+            setTimeout(() => {
+              this.$emit('resize')
+              // this.$emit('remove', this.move.id)
+              // this.$destroy()
+            }, 1)
+          })
+        }
+        // Do stuff
+        this.$emit('drop', '')
+        this.$emit('move', '')
+      }
+    },
     resize() {
       this.render()
     },
@@ -109,8 +267,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        minWidth: this.width ? this.width : 'auto',
-        minHeight: this.height ? this.height : 'auto'
+        minWidth: this.width ? this.width : '100px',
+        minHeight: this.height ? this.height : '100px'
       }
     },
     getTop(pos) {
