@@ -28,7 +28,11 @@
         v-else-if="w.id === 'preview2'"
         :windows="wins2"
       />
-      <span>{{ w.id }}</span>
+      <span
+        v-else
+        style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
+        >Content</span
+      >
     </window>
   </div>
 </template>

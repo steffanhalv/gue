@@ -8,6 +8,10 @@
       <button class="remove" @click="remove">
         X
       </button>
+      <span
+        style="display: inline-block; color: #666; font-size: .8em; padding-top: 4px"
+        >#{{ id }}</span
+      >
       <button class="move">
         M
       </button>
