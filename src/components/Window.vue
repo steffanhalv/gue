@@ -12,16 +12,7 @@
 <script>
 import { isArray } from 'util'
 export default {
-  props: [
-    'id',
-    'position',
-    'links',
-    'resize',
-    'width',
-    'height',
-    'update',
-    'level'
-  ],
+  props: ['id', 'position', 'links', 'resize', 'width', 'height', 'update'],
   data() {
     return {
       pos: null,
@@ -41,17 +32,9 @@ export default {
     this.hooks = this.links
   },
   mounted() {
-    // @todo - increase by levels
-    this.render()
     setTimeout(() => {
-      this.render()
-      setTimeout(() => {
-        this.render()
-        setTimeout(() => {
-          this.render()
-        })
-      })
-    }, this.level)
+      this.$emit('resize')
+    })
   },
   computed: {
     identity() {

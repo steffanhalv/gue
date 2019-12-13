@@ -10,12 +10,10 @@
       :links="w.hooks"
       :width="w.width"
       :height="w.height"
-      :level="level ? level : 0"
       @resize="!child ? resize++ : $emit('resize')"
       @update="update = $event"
     >
       <shell
-        :level="level ? level + 1 : 1"
         :child="true"
         :res="child ? res : resize"
         @resize="!child ? resize++ : $emit('resize')"
@@ -23,7 +21,6 @@
         :windows="wins"
       />
       <shell
-        :level="level ? level + 1 : 1"
         :child="true"
         :res="child ? res : resize"
         @resize="!child ? resize++ : $emit('resize')"
@@ -40,7 +37,7 @@ import wins from '@/models/test'
 import wins2 from '@/models/test2'
 export default {
   name: 'shell',
-  props: ['windows', 'res', 'child', 'level'],
+  props: ['windows', 'res', 'child'],
   components: {
     Window
   },
