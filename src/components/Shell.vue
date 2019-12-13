@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative; width: 100%; height: 100%">
     <window
-      v-for="w in windows"
+      v-for="(w, i) in windows"
       :id="w.id"
       :key="w.id"
       :resize="child ? res : resize"
@@ -12,6 +12,7 @@
       :height="w.height"
       @resize="!child ? resize++ : $emit('resize')"
       @update="update = $event"
+      @remove="windows.splice(i, 1)"
     >
       <shell
         :child="true"
@@ -27,7 +28,7 @@
         v-else-if="w.id === 'preview2'"
         :windows="wins2"
       />
-      <span v-else>{{ w.id }}</span>
+      <span>{{ w.id }}</span>
     </window>
   </div>
 </template>

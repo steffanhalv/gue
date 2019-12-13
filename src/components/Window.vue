@@ -4,10 +4,16 @@
     <div v-if="hooks.right" class="border-right"></div>
     <div v-if="hooks.bottom" class="border-bottom"></div>
     <div v-if="hooks.left" class="border-left"></div>
-    <button style="position: absolute; right: 0; top: 0;" @click="remove">Delete</button>
-    <button style="position: absolute; left: 0; top: 0">Move</button>
-    <div style="position: absolute; top: 20px; right: 5px; bottom: 5px; left: 5px">
-      <slot/>
+    <div class="header">
+      <button class="remove" @click="remove">
+        X
+      </button>
+      <button class="move">
+        M
+      </button>
+    </div>
+    <div class="container">
+      <slot />
     </div>
   </div>
 </template>
@@ -25,8 +31,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        width: this.width ? this.width : 'auto',
-        height: this.height ? this.height : 'auto'
+        minWidth: this.width ? this.width : 'auto',
+        minHeight: this.height ? this.height : 'auto'
       }
     }
   },
@@ -51,7 +57,10 @@ export default {
     update(el) {
       Object.keys(this.hooks).forEach(key => {
         if (isArray(this.hooks[key])) {
-          if (
+          if (this.hooks[key].length === 0) {
+            this.hooks[key] = ''
+            this.pos[key] = 0
+          } else if (
             this.hooks[key].length === 1 &&
             this.hooks[key][0] === '#' + el.id
           ) {
@@ -86,8 +95,8 @@ export default {
       })
       setTimeout(() => {
         this.$emit('resize')
+        this.$emit('remove')
         this.$destroy()
-        this.$el.parentNode.removeChild(this.$el)
       }, 1)
     },
     render() {
@@ -96,8 +105,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        width: this.width ? this.width : 'auto',
-        height: this.height ? this.height : 'auto'
+        minWidth: this.width ? this.width : 'auto',
+        minHeight: this.height ? this.height : 'auto'
       }
     },
     getTop(pos) {
@@ -163,6 +172,46 @@ export default {
   box-sizing: border-box;
   padding: 5px;
   color: white;
+}
+.container {
+  position: absolute;
+  top: 26px;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+}
+.header {
+  position: absolute;
+  width: 100%;
+  height: 26px;
+  background: #333;
+  top: 0;
+  left: 0;
+}
+.remove {
+  right: 0;
+  cursor: pointer;
+}
+.move {
+  left: 0;
+  cursor: move;
+}
+.move,
+.remove {
+  position: absolute;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  color: #555;
+  border: none;
+  background-color: #222;
+  padding: 0;
+  font-weight: bold;
+  border-radius: 3px;
+}
+.move:hover,
+.remove:hover {
+  background-color: #000;
 }
 .border-top {
   position: absolute;
