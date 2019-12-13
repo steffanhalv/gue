@@ -10,26 +10,37 @@
       :links="w.hooks"
       :width="w.width"
       :height="w.height"
+      :level="level ? level : 0"
       @resize="!child ? resize++ : $emit('resize')"
       @update="update = $event"
     >
-      <span v-if="w.id !== 'preview'">{{ w.id }}</span>
       <shell
+        :level="level ? level + 1 : 1"
         :child="true"
         :res="child ? res : resize"
         @resize="!child ? resize++ : $emit('resize')"
-        v-else
+        v-if="w.id === 'preview'"
         :windows="wins"
       />
+      <shell
+        :level="level ? level + 1 : 1"
+        :child="true"
+        :res="child ? res : resize"
+        @resize="!child ? resize++ : $emit('resize')"
+        v-else-if="w.id === 'preview2'"
+        :windows="wins2"
+      />
+      <span v-else>{{ w.id }}</span>
     </window>
   </div>
 </template>
 <script>
 import Window from '@/components/Window'
 import wins from '@/models/test'
+import wins2 from '@/models/test2'
 export default {
   name: 'shell',
-  props: ['windows', 'res', 'child'],
+  props: ['windows', 'res', 'child', 'level'],
   components: {
     Window
   },
@@ -37,7 +48,8 @@ export default {
     return {
       resize: 0,
       update: null,
-      wins
+      wins,
+      wins2
     }
   },
   created() {

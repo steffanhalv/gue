@@ -12,7 +12,16 @@
 <script>
 import { isArray } from 'util'
 export default {
-  props: ['id', 'position', 'links', 'resize', 'width', 'height', 'update'],
+  props: [
+    'id',
+    'position',
+    'links',
+    'resize',
+    'width',
+    'height',
+    'update',
+    'level'
+  ],
   data() {
     return {
       pos: null,
@@ -32,13 +41,17 @@ export default {
     this.hooks = this.links
   },
   mounted() {
+    // @todo - increase by levels
     this.render()
     setTimeout(() => {
       this.render()
       setTimeout(() => {
         this.render()
+        setTimeout(() => {
+          this.render()
+        })
       })
-    })
+    }, this.level)
   },
   computed: {
     identity() {
@@ -109,7 +122,7 @@ export default {
       ) {
         let top =
           document.querySelector(pos).getBoundingClientRect().top -
-          this.getParentTop(document.querySelector(pos).parentElement)
+          document.querySelector(pos).parentElement.getBoundingClientRect().top
         let height = document.querySelector(pos).clientHeight
         return 'calc(' + (top + height) + 'px)'
       } else return pos
@@ -120,7 +133,9 @@ export default {
         pos[0] === '#' &&
         document.querySelector(pos)
       ) {
-        let left = document.querySelector(pos).getBoundingClientRect().left
+        let left =
+          document.querySelector(pos).getBoundingClientRect().left -
+          document.querySelector(pos).parentElement.getBoundingClientRect().left
         return 'calc(100% - ' + left + 'px)'
       } else return pos
     },
@@ -130,7 +145,9 @@ export default {
         pos[0] === '#' &&
         document.querySelector(pos)
       ) {
-        let top = document.querySelector(pos).getBoundingClientRect().top
+        let top =
+          document.querySelector(pos).getBoundingClientRect().top -
+          document.querySelector(pos).parentElement.getBoundingClientRect().top
         return 'calc(100% - ' + top + 'px)'
       } else return pos
     },
@@ -142,26 +159,10 @@ export default {
       ) {
         let left =
           document.querySelector(pos).getBoundingClientRect().left -
-          this.getParentLeft(document.querySelector(pos).parentElement)
+          document.querySelector(pos).parentElement.getBoundingClientRect().left
         let width = document.querySelector(pos).clientWidth
         return 'calc(' + (left + width) + 'px)'
       } else return pos
-    },
-    getParentLeft(parent) {
-      let left = 0
-      while (parent.parentElement.parentElement) {
-        left += parent.getBoundingClientRect().left
-        parent = parent.parentElement.parentElement
-      }
-      return left
-    },
-    getParentTop(parent) {
-      let top = 0
-      while (parent.parentElement.parentElement) {
-        top += parent.getBoundingClientRect().top
-        parent = parent.parentElement.parentElement
-      }
-      return top
     }
   }
 }
