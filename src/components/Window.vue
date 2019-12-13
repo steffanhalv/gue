@@ -4,8 +4,11 @@
     <div v-if="hooks.right" class="border-right"></div>
     <div v-if="hooks.bottom" class="border-bottom"></div>
     <div v-if="hooks.left" class="border-left"></div>
-    <button @click="remove">Delete</button>
-    <slot />
+    <button style="position: absolute; right: 0; top: 0;" @click="remove">Delete</button>
+    <button style="position: absolute; left: 0; top: 0">Move</button>
+    <div style="position: absolute; top: 20px; right: 5px; bottom: 5px; left: 5px">
+      <slot/>
+    </div>
   </div>
 </template>
 
@@ -202,5 +205,6 @@ export default {
 .border-bottom:hover,
 .border-left:hover {
   background-color: rgb(56, 172, 244);
+  z-index: 1;
 }
 </style>
