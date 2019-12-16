@@ -24,9 +24,10 @@
       @update="update = $event"
       @remove="windows.splice(i, 1)"
     >
-      <playground style="height: 100%" v-if="win.id === 'playground'"/>
-      <console v-else-if="win.id === 'console'"/>
-      <span v-else
+      <playground style="height: 100%" v-if="win.id === 'playground'" />
+      <console v-else-if="win.id === 'console'" />
+      <span
+        v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
         >Content</span
       >

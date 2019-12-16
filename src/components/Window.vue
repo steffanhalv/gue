@@ -485,20 +485,22 @@ export default {
 }
 .new_win,
 .remove {
+  border-radius: 50%;
   position: absolute;
-  top: 0;
-  width: 26px;
-  height: 26px;
+  margin: 3px;
+  width: 20px;
+  height: 20px;
   color: #555;
   border: none;
   background-color: #222;
   padding: 0;
   font-weight: bold;
-  border-radius: 3px;
+  font-size: 0.6em;
 }
 .new_win:hover,
 .remove:hover {
-  background-color: #000;
+  color: white;
+  background-color: rgb(56, 172, 244);
 }
 .move {
   position: absolute;

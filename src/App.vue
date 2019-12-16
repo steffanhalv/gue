@@ -20,7 +20,9 @@ export default {
 </script>
 
 <style>
-#app {
+#app,
+html,
+body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -31,6 +33,7 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
+  background: #555;
 }
 body {
   margin: 0;
