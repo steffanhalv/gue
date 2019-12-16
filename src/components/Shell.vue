@@ -24,7 +24,9 @@
       @update="update = $event"
       @remove="windows.splice(i, 1)"
     >
-      <span
+      <playground style="height: 100%" v-if="win.id === 'playground'"/>
+      <console v-else-if="win.id === 'console'"/>
+      <span v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
         >Content</span
       >
@@ -32,12 +34,16 @@
   </div>
 </template>
 <script>
+import Playground from '@/components/Playground'
+import Console from '@/components/Console'
 import Window from '@/components/Window'
 export default {
   name: 'shell',
   props: ['windows', 'res', 'mov', 'child'],
   components: {
-    Window
+    Window,
+    Playground,
+    Console
   },
   data() {
     return {

@@ -8,7 +8,7 @@
     </button>
     <iframe
       v-if="$server.load === 100"
-      style="background: white; border: none; width: 100%; height: calc(100% - 150px)"
+      style="background: white; border: none; width: 100%; height: 100%"
       :src="$server.local"
     ></iframe>
     <div v-else>Loading {{ $server.load }}%</div>
@@ -60,4 +60,5 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+</style>

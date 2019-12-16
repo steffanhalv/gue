@@ -2,6 +2,7 @@
   <div
     :id="identity"
     class="window"
+    :class="move ? 'moving' : ''"
     :style="style"
     @mouseup="$emit('move', '')"
   >
@@ -44,16 +45,19 @@
       @mousedown="resizing = 'left'"
       @mouseup=";(dropped = 'left'), $emit('drop', 'self')"
     ></div>
-    <div class="header">
+    <div
+      class="header"
+      :style="me.pos.top === 0 && !move ? 'top: 0!important' : ''"
+    >
       <button class="remove" @click="remove">
         X
       </button>
       <button @mousedown="$emit('move', 'self')" class="move">
         #{{ me.id }}
       </button>
-      <button class="new_win" @mousedown="$emit('move', 'self')">
+      <!--button class="new_win" @mousedown="$emit('move', 'self')">
         ^
-      </button>
+      </button-->
     </div>
     <div class="container">
       <slot />
@@ -498,12 +502,13 @@ export default {
 }
 .move {
   position: absolute;
-  left: 26px;
+  left: 0;
   right: 26px;
-  width: calc(100% - 26px - 26px);
+  width: calc(100% - 26px);
+  padding-left: 26px;
   background: none;
   border: none;
-  cursor: move;
+  cursor: grab;
   display: inline-block;
   height: 100%;
   color: #666;
@@ -513,38 +518,38 @@ export default {
 }
 .border-top {
   position: absolute;
-  left: 5px;
+  left: 0;
   top: 0;
-  width: calc(100% - 10px);
+  width: 100%;
   height: 5px;
-  background-color: rgb(115, 115, 115);
+  background-color: rgb(72, 72, 72);
   cursor: ns-resize;
 }
 .border-right {
   position: absolute;
   right: 0;
-  top: 5px;
+  top: 0;
   width: 5px;
-  height: calc(100% - 10px);
-  background-color: rgb(115, 115, 115);
+  height: 100%;
+  background-color: rgb(72, 72, 72);
   cursor: ew-resize;
 }
 .border-bottom {
   position: absolute;
-  left: 5px;
+  left: 0;
   bottom: 0;
-  width: calc(100% - 10px);
+  width: 100%;
   height: 5px;
-  background-color: rgb(100, 100, 100);
+  background-color: rgb(60, 60, 60);
   cursor: ns-resize;
 }
 .border-left {
   position: absolute;
   left: 0;
-  top: 5px;
+  top: 0;
   width: 5px;
-  height: calc(100% - 10px);
-  background-color: rgb(100, 100, 100);
+  height: 100%;
+  background-color: rgb(60, 60, 60);
   cursor: ew-resize;
 }
 .border-top:hover,
@@ -553,5 +558,12 @@ export default {
 .border-left:hover {
   background-color: rgb(56, 172, 244);
   z-index: 1;
+}
+.moving .border-top,
+.moving .border-right,
+.moving .border-bottom,
+.moving .border-left,
+.moving {
+  cursor: move !important;
 }
 </style>

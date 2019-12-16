@@ -7,13 +7,13 @@ export default [
     pos: {
       top: 0,
       right: 'calc(100% - 100px)',
-      bottom: '#timeline',
+      bottom: '#console',
       left: 0
     },
     hooks: {
       top: '',
       right: '#playground',
-      bottom: '#timeline',
+      bottom: '#console',
       left: ''
     }
   },
@@ -24,33 +24,15 @@ export default [
     height: '',
     pos: {
       top: 0,
-      right: 'calc(100% - 300px)',
-      bottom: '#timeline',
-      left: '#tools'
-    },
-    hooks: {
-      top: '',
-      right: '#preview',
-      bottom: '#timeline',
-      left: '#tools'
-    }
-  },
-  // Preview
-  {
-    id: 'preview',
-    width: '',
-    height: '',
-    pos: {
-      top: 0,
       right: '300px',
-      bottom: '#timeline',
-      left: '#playground'
+      bottom: '#console',
+      left: '#tools'
     },
     hooks: {
       top: '',
       right: ['#styles', '#layers'],
-      bottom: '#timeline',
-      left: '#playground'
+      bottom: '#console',
+      left: '#tools'
     }
   },
   // Styles
@@ -58,8 +40,8 @@ export default [
     id: 'styles',
     width: '',
     height: '',
-    pos: { top: 0, right: 0, bottom: '#layers', left: '#preview' },
-    hooks: { top: '', right: '', bottom: '#layers', left: '#preview' }
+    pos: { top: 0, right: 0, bottom: '#layers', left: '#playground' },
+    hooks: { top: '', right: '', bottom: '#layers', left: '#playground' }
   },
   // Layers
   {
@@ -67,26 +49,26 @@ export default [
     width: '',
     height: '',
     pos: {
-      top: 'calc(100% - 400px)',
+      top: 'calc(100% - 500px)',
       right: 0,
-      bottom: '#timeline',
-      left: '#preview'
+      bottom: '#console',
+      left: '#playground'
     },
     hooks: {
-      top: '#styles',
+      top: 'calc(100% - 300px)',
       right: '',
-      bottom: '#timeline',
-      left: '#preview'
+      bottom: '#console',
+      left: '#playground'
     }
   },
-  // Timeline
+  // console
   {
-    id: 'timeline',
+    id: 'console',
     width: '',
     height: '',
     pos: { top: 'calc(100% - 200px)', right: 0, bottom: 0, left: 0 },
     hooks: {
-      top: ['#tools', '#playground', '#preview', '#layers'],
+      top: ['#tools', '#playground', '#playground', '#layers'],
       right: '',
       bottom: '',
       left: ''
