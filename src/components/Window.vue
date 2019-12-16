@@ -1,23 +1,47 @@
 <template>
-  <div :id="identity" class="window" :style="style">
+  <div
+    :id="identity"
+    class="window"
+    :style="style"
+    @mouseup="$emit('move', '')"
+  >
     <div
+      v-if="resizing"
+      @mouseup="resizing = false"
+      @mousemove="resizing ? resizeWindow($event) : ''"
+      @mouseleave="resizing = false"
+      style="position: fixed; z-index: 1; left: 0; top: 0; right: 0; bottom: 0;"
+    ></div>
+    <div
+      v-if="move || (!arr(me.pos.top) && !hash(me.pos.top) && me.pos.top !== 0)"
       class="border-top"
-      @mousedown="resize"
+      @mousedown="resizing = 'top'"
       @mouseup=";(dropped = 'top'), $emit('drop', 'self')"
     ></div>
     <div
+      v-if="
+        move ||
+          (!arr(me.pos.right) && !hash(me.pos.right) && me.pos.right !== 0)
+      "
       class="border-right"
-      @mousedown="resize"
+      @mousedown="resizing = 'right'"
       @mouseup=";(dropped = 'right'), $emit('drop', 'self')"
     ></div>
     <div
+      v-if="
+        move ||
+          (!arr(me.pos.bottom) && !hash(me.pos.bottom) && me.pos.bottom !== 0)
+      "
       class="border-bottom"
-      @mousedown="resize"
+      @mousedown="resizing = 'bottom'"
       @mouseup=";(dropped = 'bottom'), $emit('drop', 'self')"
     ></div>
     <div
+      v-if="
+        move || (!arr(me.pos.left) && !hash(me.pos.left) && me.pos.left !== 0)
+      "
       class="border-left"
-      @mousedown="resize"
+      @mousedown="resizing = 'left'"
       @mouseup=";(dropped = 'left'), $emit('drop', 'self')"
     ></div>
     <div class="header">
@@ -32,22 +56,12 @@
       </button>
     </div>
     <div class="container">
-      T {{ me.hooks.top }}<br />
-      R {{ me.hooks.right }}<br />
-      B {{ me.hooks.bottom }}<br />
-      L {{ me.hooks.left }}<br />
-      PT {{ pos.top }}<br />
-      PR {{ pos.right }}<br />
-      PB {{ pos.bottom }}<br />
-      PL {{ pos.left }}<br />
-      W {{ me.width }} H {{ me.height }}
       <slot />
     </div>
   </div>
 </template>
 
 <script>
-import { isArray } from 'util'
 export default {
   props: [
     'position',
@@ -62,6 +76,9 @@ export default {
   ],
   data() {
     return {
+      resizing: false,
+      resizePos: null,
+      resizeStart: null,
       dropped: '',
       pos: null,
       hooks: null,
@@ -70,8 +87,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        minWidth: this.me.width ? this.me.width : '100px',
-        minHeight: this.me.height ? this.me.height : '100px'
+        minWidth: this.me.width ? this.me.width : 'auto',
+        minHeight: this.me.height ? this.me.height : 'auto'
       }
     }
   },
@@ -131,7 +148,7 @@ export default {
                   ) {
                     el.hooks[key] = ['#' + drop.id, '#' + move.id]
                   }
-                } else if (isArray(el.hooks[key])) {
+                } else if (this.arr(el.hooks[key])) {
                   let arr = []
                   let found = false
                   el.hooks[key].forEach(hook => {
@@ -246,7 +263,7 @@ export default {
     },
     update(el) {
       Object.keys(this.me.hooks).forEach(key => {
-        if (isArray(this.me.hooks[key])) {
+        if (this.arr(this.me.hooks[key])) {
           if (this.me.hooks[key].length === 0) {
             this.me.hooks[key] = ''
             this.pos[key] = 0
@@ -262,7 +279,7 @@ export default {
               if (id !== '#' + el.id) {
                 arr.push(id)
               } else {
-                if (isArray(el.hooks[key])) {
+                if (this.arr(el.hooks[key])) {
                   arr = arr.concat(el.hooks[key])
                 } else if (el.hooks[key]) {
                   arr.push(el.hooks[key])
@@ -280,9 +297,69 @@ export default {
         }
       })
       this.render()
+    },
+    resizing() {
+      if (!this.resizing) {
+        this.resizeStart = null
+        this.$emit('resize')
+      }
     }
   },
   methods: {
+    resizeWindow(e) {
+      if (this.resizeStart === null) {
+        if (this.resizing === 'top') {
+          this.resizeStart = e.y
+          this.resizePos =
+            document.querySelector('#' + this.me.id).getBoundingClientRect()
+              .top -
+            document
+              .querySelector('#' + this.me.id)
+              .parentElement.getBoundingClientRect().top
+        } else if (this.resizing === 'right') {
+          this.resizeStart = e.x
+          this.resizePos =
+            document.querySelector('#' + this.me.id).getBoundingClientRect()
+              .left -
+            document
+              .querySelector('#' + this.me.id)
+              .parentElement.getBoundingClientRect().left +
+            document.querySelector('#' + this.me.id).clientWidth
+        } else if (this.resizing === 'bottom') {
+          this.resizeStart = e.y
+          this.resizePos =
+            document.querySelector('#' + this.me.id).getBoundingClientRect()
+              .top -
+            document
+              .querySelector('#' + this.me.id)
+              .parentElement.getBoundingClientRect().top +
+            document.querySelector('#' + this.me.id).clientHeight
+        } else if (this.resizing === 'left') {
+          this.resizeStart = e.x
+          this.resizePos =
+            document.querySelector('#' + this.me.id).getBoundingClientRect()
+              .left -
+            document
+              .querySelector('#' + this.me.id)
+              .parentElement.getBoundingClientRect().left
+        }
+      }
+      if (this.resizing === 'top') {
+        this.me.pos[this.resizing] =
+          this.resizePos - (this.resizeStart - e.y) + 'px'
+      } else if (this.resizing === 'right') {
+        this.me.pos[this.resizing] =
+          'calc(100% - ' + (this.resizePos - (this.resizeStart - e.x)) + 'px)'
+      } else if (this.resizing === 'bottom') {
+        this.me.pos[this.resizing] =
+          'calc(100% - ' + (this.resizePos - (this.resizeStart - e.y)) + 'px)'
+      } else if (this.resizing === 'left') {
+        this.me.pos[this.resizing] =
+          this.resizePos - (this.resizeStart - e.x) + 'px'
+      }
+      this.render()
+      this.$emit('resize')
+    },
     remove() {
       this.$emit('update', {
         id: this.me.id,
@@ -301,8 +378,8 @@ export default {
         right: this.getRight(this.pos ? this.pos.right : 0),
         bottom: this.getBottom(this.pos ? this.pos.bottom : 0),
         left: this.getLeft(this.pos ? this.pos.left : 0),
-        minWidth: this.me.width ? this.me.width : '100px',
-        minHeight: this.me.height ? this.me.height : '100px'
+        minWidth: this.me.width ? this.me.width : 'auto',
+        minHeight: this.me.height ? this.me.height : 'auto'
       }
     },
     getTop(pos) {
@@ -358,6 +435,12 @@ export default {
         let width = document.querySelector(pos).clientWidth
         return left + width + 'px'
       } else return pos
+    },
+    arr(v) {
+      return typeof v === 'object'
+    },
+    hash(v) {
+      return typeof v === 'string' && v.indexOf('#') === 0 ? true : false
     }
   }
 }

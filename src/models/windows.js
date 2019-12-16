@@ -20,11 +20,11 @@ export default [
   // Playground
   {
     id: 'playground',
-    width: '300px',
+    width: '',
     height: '',
     pos: {
       top: 0,
-      right: '#preview',
+      right: 'calc(100% - 300px)',
       bottom: '#timeline',
       left: '#tools'
     },
