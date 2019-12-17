@@ -6,7 +6,7 @@
     <div class="layers" :class="count ? '' : 'container'">
       <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
         <div
-          :class="layer.visible ? (!layer.tag ? 'text' : 'visible') : 'hidden'"
+          :class="layer.visible ? (!layer.tag || (tagName(layer).toLowerCase() === 'template') ? 'text' : 'visible') : 'hidden'"
           class="eye"
           @mouseover="hover(layer)"
           @mouseleave="leave(layer)"
@@ -145,7 +145,6 @@ button:hover {
 label {
   display: inline-block;
   width: 100%;
-  text-transform: capitalize;
   padding-top: 2px;
   padding-bottom: 2px;
   background-color: #555;
