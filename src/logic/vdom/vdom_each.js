@@ -3,7 +3,7 @@ export default (vdom, start, end) => {
     nodes.forEach(node => {
       start(node)
       iterate(node.children)
-      end(node)
+      if (end) end(node)
     })
   }
   iterate(vdom)

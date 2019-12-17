@@ -70,6 +70,9 @@ export default {
       selected: ''
     }
   },
+  mounted() {
+    this.init()
+  },
   watch: {
     '$server.load'(percentage) {
       if (!this.count && percentage === 100) {

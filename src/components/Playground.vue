@@ -1,11 +1,5 @@
 <template>
   <div class="presentation">
-    <button style="position: absolute; right: 120px; top: 10px;" @click="add">
-      Add bg color
-    </button>
-    <button style="position: absolute; right: 5px; top: 10px;" @click="remove">
-      Remove bg color
-    </button>
     <iframe
       v-if="$server.load === 100"
       style="background: white; border: none; width: 100%; height: 100%"
@@ -16,7 +10,6 @@
 </template>
 
 <script>
-import vdom from '@/logic/vdom/index'
 export default {
   data() {
     return {}
@@ -43,24 +36,6 @@ export default {
     '$server.log'() {
       // @todo - Load vdom on file change
       // this.$vdom.load()
-    }
-  },
-  methods: {
-    add() {
-      // Manipulate the dom
-      let app = this.$vdom.template().children[1]
-      let attr = vdom.attrFromTag(app)
-      attr = vdom.attrSet(attr, 'style="background: red"')
-      app.start = vdom.attrToTag(attr)
-      this.$vdom.save()
-    },
-    remove() {
-      // Reset your changes
-      let app = this.$vdom.template().children[1]
-      let attr = vdom.attrFromTag(app)
-      attr = vdom.attrRemove(attr, 'style')
-      app.start = vdom.attrToTag(attr)
-      this.$vdom.save()
     }
   }
 }
