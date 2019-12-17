@@ -31,7 +31,7 @@ export default [
     hooks: {
       top: '',
       right: ['#styles', '#layers'],
-      bottom: '#console',
+      bottom: ['#console', '#assets', '#router'],
       left: '#tools'
     }
   },
@@ -66,12 +66,48 @@ export default [
     id: 'console',
     width: '',
     height: '',
-    pos: { top: 'calc(100% - 200px)', right: '#layers', bottom: 0, left: 0 },
+    pos: {
+      top: 'calc(100% - 200px)',
+      right: 'calc(100% - 600px)',
+      bottom: 0,
+      left: 0
+    },
+    hooks: {
+      top: ['#tools', '#playground', '#playground', '#layers'],
+      right: '#assets',
+      bottom: '',
+      left: ''
+    }
+  },
+  // assets
+  {
+    id: 'assets',
+    width: '',
+    height: '',
+    pos: {
+      top: '#playground',
+      right: 'calc(100% - 1000px)',
+      bottom: 0,
+      left: '#console'
+    },
+    hooks: {
+      top: ['#tools', '#playground', '#playground', '#layers'],
+      right: '#router',
+      bottom: '',
+      left: '#console'
+    }
+  },
+  // router
+  {
+    id: 'router',
+    width: '',
+    height: '',
+    pos: { top: '#playground', right: '#layers', bottom: 0, left: '#assets' },
     hooks: {
       top: ['#tools', '#playground', '#playground', '#layers'],
       right: ['#layers', '#styles'],
       bottom: '',
-      left: ''
+      left: '#assets'
     }
   }
 ]

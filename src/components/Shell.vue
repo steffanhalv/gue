@@ -34,6 +34,9 @@
         v-else-if="win.id === 'layers'"
       />
       <styles v-else-if="win.id === 'styles'" :selected="selected" />
+      <assets v-else-if="win.id === 'assets'" />
+      <router v-else-if="win.id === 'router'" />
+      <tools v-else-if="win.id === 'tools'" />
       <span
         v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
@@ -48,6 +51,9 @@ import Playground from '@/components/Playground'
 import Console from '@/components/Console'
 import Layers from '@/components/Layers'
 import Styles from '@/components/Styles'
+import Assets from '@/components/Assets'
+import Router from '@/components/Router'
+import Tools from '@/components/Tools'
 export default {
   name: 'shell',
   props: ['windows', 'res', 'mov', 'child'],
@@ -56,7 +62,10 @@ export default {
     Playground,
     Console,
     Layers,
-    Styles
+    Styles,
+    Assets,
+    Router,
+    Tools
   },
   data() {
     return {
