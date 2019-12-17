@@ -26,7 +26,11 @@
     >
       <playground style="height: 100%" v-if="win.id === 'playground'" />
       <console v-else-if="win.id === 'console'" />
-      <layers v-else-if="win.id === 'layers'" />
+      <layers
+        @hovering="hover"
+        @selected="select"
+        v-else-if="win.id === 'layers'"
+      />
       <span
         v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
@@ -54,7 +58,9 @@ export default {
       resize: 0,
       update: null,
       move: null,
-      drop: null
+      drop: null,
+      hovering: '',
+      selected: ''
     }
   },
   created() {
@@ -62,6 +68,22 @@ export default {
       window.onresize = () => {
         this.resize++
       }
+    }
+  },
+  watch: {
+    selected() {
+      console.log('selected', this.selected)
+    },
+    hovering() {
+      console.log('hovering', this.hovering)
+    }
+  },
+  methods: {
+    hover(hovering) {
+      this.hovering = hovering
+    },
+    select(selected) {
+      this.selected = selected
     }
   }
 }

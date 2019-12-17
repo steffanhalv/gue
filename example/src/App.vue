@@ -1,11 +1,11 @@
-<template>
-  <div id="app">
-    <div>
-      <span>hey</span>
+<template data-gid="0">
+  <div data-gid="2" id="app">
+    <div data-gid="4">
+      <span data-gid="6">hey</span>
     </div>
-    <br>
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <br data-gid="10">
+    <img data-gid="12" alt="Vue logo" src="./assets/logo.png">
+    <HelloWorld data-gid="14" msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 

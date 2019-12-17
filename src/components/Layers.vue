@@ -6,6 +6,8 @@
     <button v-if="!count" @click="$vdom.unload()">
       Unload
     </button>
+    <div v-if="!count" class="hovering">{{ hovering }}</div>
+    <div v-if="!count" class="selected">{{ selected }}</div>
     <div class="layers" :class="count ? '' : 'container'">
       <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
         <div
@@ -18,18 +20,31 @@
               : 'hidden'
           "
           class="eye"
-          @mouseover="hover(layer)"
-          @mouseleave="leave(layer)"
+          @mouseover="
+            hover(layer),
+              count ? $emit('hover', layer.id) : (hovering = layer.id)
+          "
+          @mouseleave="
+            leave(layer), count ? $emit('hover', '') : (hovering = '')
+          "
           @click="toggleVisibility(layer)"
         />
         <label
-          @mouseover="hover(layer)"
-          @mouseleave="leave(layer)"
+          @click="count ? $emit('select', layer.id) : (selected = layer.id)"
+          @mouseover="
+            hover(layer),
+              count ? $emit('hover', layer.id) : (hovering = layer.id)
+          "
+          @mouseleave="
+            leave(layer), count ? $emit('hover', '') : (hovering = '')
+          "
           :style="'padding-left:' + (20 * (count || 0) + 30) + 'px'"
           >{{ tagName(layer) }}</label
         >
         <layers
           v-if="layer.children.length"
+          @hover="count ? $emit('hover', $event) : (hovering = $event)"
+          @select="count ? $emit('select', $event) : (selected = $event)"
           :children="layer.children"
           :count="count ? count + 1 : 1"
         />
@@ -45,16 +60,23 @@ export default {
   props: ['children', 'count'],
   data() {
     return {
-      counter: 0
+      hovering: '',
+      selected: ''
     }
   },
   watch: {
     '$server.load'(percentage) {
       if (!this.count && percentage === 100) {
         setTimeout(() => {
-          this.addStyle()
-        }, 100)
+          this.init()
+        }, 200)
       }
+    },
+    selected() {
+      if (!this.count) this.$emit('selected', this.selected)
+    },
+    hovering() {
+      if (!this.count) this.$emit('hovering', this.hovering)
     }
   },
   computed: {
@@ -64,13 +86,13 @@ export default {
     }
   },
   methods: {
-    addStyle() {
+    init() {
       let css = `
         .gui-hidden {
           display: none
         }
         .gui-hover {
-          background: #555
+          background: rgba(0, 0, 0, 0.1)
         }
       `
       let el = document.getElementsByTagName('iframe')[0].contentDocument
@@ -79,6 +101,35 @@ export default {
       style.type = 'text/css'
       style.innerText = css
       head.appendChild(style)
+      el.querySelectorAll('[data-gid]').forEach(item => {
+        item.addEventListener('click', event => {
+          event.preventDefault()
+          event.stopPropagation()
+          this.selected = item.dataset.gid
+          console.log('clicked', item.dataset.gid, event)
+        })
+        item.addEventListener('mouseenter', () => {
+          el.querySelectorAll('[data-gid]').forEach(it => {
+            it.classList.remove('gui-hover')
+          })
+          item.classList.add('gui-hover')
+          this.hovering = item.dataset.gid
+        })
+        item.addEventListener('mouseover', () => {
+          let found = false
+          el.querySelectorAll('[data-gid]').forEach(it => {
+            if (it.classList.contains('gui-hover')) found = true
+          })
+          if (!found) {
+            item.classList.add('gui-hover')
+            this.hovering = item.dataset.gid
+          }
+        })
+        item.addEventListener('mouseleave', () => {
+          item.classList.remove('gui-hover')
+          this.hovering = ''
+        })
+      })
     },
     tagName(layer) {
       if (layer.tag) {
@@ -107,6 +158,7 @@ export default {
         let el = document.getElementsByTagName('iframe')[0].contentDocument
         el = el.querySelector('[data-gid="' + layer.id + '"]')
         if (el) el.classList.add('gui-hover')
+        this.hovering = layer.id
       }
     },
     leave(layer) {
@@ -114,6 +166,7 @@ export default {
         let el = document.getElementsByTagName('iframe')[0].contentDocument
         el = el.querySelector('[data-gid="' + layer.id + '"]')
         if (el) el.classList.remove('gui-hover')
+        this.hovering = ''
       }
     }
   }
@@ -138,7 +191,7 @@ button:hover {
   position: absolute;
   top: 20px;
   right: 0;
-  bottom: 0;
+  bottom: 20px;
   left: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -177,5 +230,19 @@ label:hover {
 }
 .eye.text {
   background: #777;
+}
+.hovering,
+.selected {
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  height: 16px;
+  border: none;
+  background: #444;
+  color: #ccc;
+  font-size: 0.8em;
+}
+.selected {
+  right: 0;
 }
 </style>

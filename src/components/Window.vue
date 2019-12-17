@@ -463,9 +463,9 @@ export default {
 .container {
   position: absolute;
   top: 31px;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
 }
 .header {
   position: absolute;
