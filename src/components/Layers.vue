@@ -1,21 +1,29 @@
 <template>
-  <div class="layers" :class="count ? '' : 'container'">
+  <div>
     <button v-if="!count" @click="$vdom.load()">
       Reload
     </button>
-    <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
-      <div class="eye" />
-      <label
-        @mouseover="hover(layer)"
-        @mouseleave="leave(layer)"
-        :style="'padding-left:' + (20 * (count || 0) + 30) + 'px'"
-        >{{ tagName(layer) }}</label
-      >
-      <layers
-        v-if="layer.children.length"
-        :children="layer.children"
-        :count="count ? count + 1 : 1"
-      />
+    <div class="layers" :class="count ? '' : 'container'">
+      <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
+        <div
+          :class="layer.visible ? (!layer.tag ? 'text' : 'visible') : 'hidden'"
+          class="eye"
+          @mouseover="hover(layer)"
+          @mouseleave="leave(layer)"
+          @click="toggleVisibility(layer)"
+        />
+        <label
+          @mouseover="hover(layer)"
+          @mouseleave="leave(layer)"
+          :style="'padding-left:' + (20 * (count || 0) + 30) + 'px'"
+          >{{ tagName(layer) }}</label
+        >
+        <layers
+          v-if="layer.children.length"
+          :children="layer.children"
+          :count="count ? count + 1 : 1"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +38,15 @@ export default {
       counter: 0
     }
   },
+  watch: {
+    '$server.load' (percentage) {
+      if (!this.count && percentage === 100) {
+        setTimeout(() => {
+          this.addStyle()
+        }, 100)
+      }
+    }
+  },
   computed: {
     layers() {
       if (this.children) return this.children
@@ -37,6 +54,22 @@ export default {
     }
   },
   methods: {
+    addStyle() {
+      let css = `
+        .gui-hidden {
+          display: none
+        }
+        .gui-hover {
+          background: #555
+        }
+      `
+      let el = document.getElementsByTagName('iframe')[0].contentDocument
+      let head = el.head
+      let style = document.createElement('style')
+      style.type = 'text/css'
+      style.innerText = css
+      head.appendChild(style)
+    },
     tagName(layer) {
       if (layer.tag) {
         return vdom.attrFromTag(layer)[0]
@@ -44,20 +77,33 @@ export default {
         return 'Text'
       }
     },
+    toggleVisibility(layer) {
+      if (layer.tag) {
+        let el = document.getElementsByTagName('iframe')[0].contentDocument
+        el = el.querySelector('[data-gid="' + layer.id + '"]')
+        if (el && el.classList.contains('gui-hidden')) {
+          el.classList.remove('gui-hidden')
+          layer.visible = true
+        } else if (el) {
+          el.classList.add('gui-hidden')
+          layer.visible = false
+        } else {
+          layer.visible = true
+        }
+      }
+    },
     hover(layer) {
       if (layer.tag) {
-        let el = document.getElementsByTagName('iframe')[0]
-        el = el.contentDocument || el.contentWindow.document
+        let el = document.getElementsByTagName('iframe')[0].contentDocument
         el = el.querySelector('[data-gid="' + layer.id + '"]')
-        if (el) el.style.background = '#333'
+        if (el) el.classList.add('gui-hover')
       }
     },
     leave(layer) {
       if (layer.tag) {
-        let el = document.getElementsByTagName('iframe')[0]
-        el = el.contentDocument || el.contentWindow.document
+        let el = document.getElementsByTagName('iframe')[0].contentDocument
         el = el.querySelector('[data-gid="' + layer.id + '"]')
-        if (el) el.style.background = 'transparent'
+        if (el) el.classList.remove('gui-hover')
       }
     }
   }
@@ -65,9 +111,24 @@ export default {
 </script>
 
 <style scoped>
-.container {
+button {
   position: absolute;
   top: 0;
+  left: 0;
+  width: 100%;
+  border: none;
+  background: #444;
+  color: #ccc;
+  outline: none;
+  cursor: pointer;
+}
+button:hover {
+  background: #333;
+  color: #fff;
+}
+.container {
+  position: absolute;
+  top: 20px;
   right: 0;
   bottom: 0;
   left: 0;
@@ -102,5 +163,12 @@ label:hover {
   border-radius: 50%;
   background: green;
   display: inline-block;
+  cursor: pointer;
+}
+.eye.hidden {
+  background: red;
+}
+.eye.text {
+  background: #777;
 }
 </style>

@@ -108,7 +108,8 @@ export default (raw = '') => {
             tag: node.tag,
             start: node.text,
             children: [],
-            end: ''
+            end: '',
+            visible: true
           })
         }
       } else if (!node.tag || !node.end || (node.children && !node.end)) {
@@ -130,7 +131,8 @@ export default (raw = '') => {
               tag: true,
               start: start[0],
               children: appendChildren(arr2),
-              end: node.text
+              end: node.text,
+              visible: true
             })
             arr2 = []
           } else {
