@@ -2,7 +2,7 @@
   <div class="presentation">
     <iframe
       v-if="$server.load === 100"
-      style="background: white; border: none; width: 100%; height: 100%"
+      style="position: absolute; left: 0; background: white; border: none; width: 100%; height: 100%"
       :src="$server.local"
     ></iframe>
     <div v-else>Loading {{ $server.load }}%</div>

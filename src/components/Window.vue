@@ -459,6 +459,7 @@ export default {
   box-sizing: border-box;
   padding: 5px;
   color: white;
+  overflow: auto;
 }
 .container {
   position: absolute;
