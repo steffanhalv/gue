@@ -51,14 +51,14 @@ export default [
     pos: {
       top: 'calc(100% - 500px)',
       right: 0,
-      bottom: '#console',
+      bottom: 0,
       left: '#playground'
     },
     hooks: {
       top: 'calc(100% - 300px)',
       right: '',
-      bottom: '#console',
-      left: '#playground'
+      bottom: '',
+      left: ['#playground', '#console']
     }
   },
   // console
@@ -66,10 +66,10 @@ export default [
     id: 'console',
     width: '',
     height: '',
-    pos: { top: 'calc(100% - 200px)', right: 0, bottom: 0, left: 0 },
+    pos: { top: 'calc(100% - 200px)', right: '#layers', bottom: 0, left: 0 },
     hooks: {
       top: ['#tools', '#playground', '#playground', '#layers'],
-      right: '',
+      right: ['#layers', '#styles'],
       bottom: '',
       left: ''
     }
