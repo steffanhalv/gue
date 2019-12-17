@@ -1,7 +1,7 @@
 <template>
   <div class="styles">
-    <button @click="add">Add</button>
-    <button @click="remove">Remove</button>
+    <button v-if="selected" @click="add">Make red</button>
+    <button v-if="selected" @click="remove">Remove style</button>
     {{ selected }}
   </div>
 </template>

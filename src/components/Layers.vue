@@ -1,10 +1,10 @@
 <template>
   <div>
     <button v-if="!count" @click="$vdom.load()">
-      Reload
+      Hook file
     </button>
     <button v-if="!count" @click="$vdom.unload()">
-      Unload
+      Unhook file
     </button>
     <div v-if="!count" class="hovering">{{ hovering }}</div>
     <div v-if="!count" class="selected">{{ selected }}</div>
@@ -39,8 +39,9 @@
             leave(layer), count ? $emit('hover', '') : (hovering = '')
           "
           :class="{
-            current: current.toString() === layer.id.toString(),
-            next: next.toString() === layer.id.toString()
+            current:
+              current && layer.id && current.toString() === layer.id.toString(),
+            next: next && layer.id && next.toString() === layer.id.toString()
           }"
           :style="'padding-left:' + (20 * (count || 0) + 30) + 'px'"
           >{{ tagName(layer) }}</label
@@ -84,12 +85,15 @@ export default {
     selected() {
       if (!this.count) {
         this.$emit('selected', this.selected)
-        let el = document.getElementsByTagName('iframe')[0].contentDocument
-        el.querySelectorAll('[data-gid]').forEach(it => {
-          it.classList.remove('gui-selected')
-        })
-        el = el.querySelector('[data-gid="' + this.selected + '"]')
-        if (el) el.classList.add('gui-selected')
+        let el = document.getElementsByTagName('iframe')[0]
+        if (el) {
+          el = el.contentDocument
+          el.querySelectorAll('[data-gid]').forEach(it => {
+            it.classList.remove('gui-selected')
+          })
+          el = el.querySelector('[data-gid="' + this.selected + '"]')
+          if (el) el.classList.add('gui-selected')
+        }
       }
     },
     hovering() {
@@ -115,40 +119,43 @@ export default {
           background: rgba(0, 0, 0, 0.05)
         }
       `
-      let el = document.getElementsByTagName('iframe')[0].contentDocument
-      let head = el.head
-      let style = document.createElement('style')
-      style.type = 'text/css'
-      style.innerText = css
-      head.appendChild(style)
-      el.querySelectorAll('[data-gid]').forEach(item => {
-        item.addEventListener('click', event => {
-          event.preventDefault()
-          event.stopPropagation()
-          this.selected = item.dataset.gid
-        })
-        item.addEventListener('mouseenter', () => {
-          el.querySelectorAll('[data-gid]').forEach(it => {
-            it.classList.remove('gui-hover')
+      let el = document.getElementsByTagName('iframe')[0]
+      if (el) {
+        el = el.contentDocument
+        let head = el.head
+        let style = document.createElement('style')
+        style.type = 'text/css'
+        style.innerText = css
+        head.appendChild(style)
+        el.querySelectorAll('[data-gid]').forEach(item => {
+          item.addEventListener('click', event => {
+            event.preventDefault()
+            event.stopPropagation()
+            this.selected = item.dataset.gid
           })
-          item.classList.add('gui-hover')
-          this.hovering = item.dataset.gid
-        })
-        item.addEventListener('mouseover', () => {
-          let found = false
-          el.querySelectorAll('[data-gid]').forEach(it => {
-            if (it.classList.contains('gui-hover')) found = true
-          })
-          if (!found) {
+          item.addEventListener('mouseenter', () => {
+            el.querySelectorAll('[data-gid]').forEach(it => {
+              it.classList.remove('gui-hover')
+            })
             item.classList.add('gui-hover')
             this.hovering = item.dataset.gid
-          }
+          })
+          item.addEventListener('mouseover', () => {
+            let found = false
+            el.querySelectorAll('[data-gid]').forEach(it => {
+              if (it.classList.contains('gui-hover')) found = true
+            })
+            if (!found) {
+              item.classList.add('gui-hover')
+              this.hovering = item.dataset.gid
+            }
+          })
+          item.addEventListener('mouseleave', () => {
+            item.classList.remove('gui-hover')
+            this.hovering = ''
+          })
         })
-        item.addEventListener('mouseleave', () => {
-          item.classList.remove('gui-hover')
-          this.hovering = ''
-        })
-      })
+      }
     },
     tagName(layer) {
       if (layer.tag) {
@@ -159,33 +166,39 @@ export default {
     },
     toggleVisibility(layer) {
       if (layer.tag) {
-        let el = document.getElementsByTagName('iframe')[0].contentDocument
-        el = el.querySelector('[data-gid="' + layer.id + '"]')
-        if (el && el.classList.contains('gui-hidden')) {
-          el.classList.remove('gui-hidden')
-          layer.visible = true
-        } else if (el) {
-          el.classList.add('gui-hidden')
-          layer.visible = false
-        } else {
-          layer.visible = true
+        let el = document.getElementsByTagName('iframe')[0]
+        if (el) {
+          el = el.contentDocument.querySelector('[data-gid="' + layer.id + '"]')
+          if (el && el.classList.contains('gui-hidden')) {
+            el.classList.remove('gui-hidden')
+            layer.visible = true
+          } else if (el) {
+            el.classList.add('gui-hidden')
+            layer.visible = false
+          } else {
+            layer.visible = true
+          }
         }
       }
     },
     hover(layer) {
       if (layer.tag) {
-        let el = document.getElementsByTagName('iframe')[0].contentDocument
-        el = el.querySelector('[data-gid="' + layer.id + '"]')
-        if (el) el.classList.add('gui-hover')
-        this.hovering = layer.id
+        let el = document.getElementsByTagName('iframe')[0]
+        if (el) {
+          el = el.contentDocument.querySelector('[data-gid="' + layer.id + '"]')
+          if (el) el.classList.add('gui-hover')
+          this.hovering = layer.id
+        }
       }
     },
     leave(layer) {
       if (layer.tag) {
-        let el = document.getElementsByTagName('iframe')[0].contentDocument
-        el = el.querySelector('[data-gid="' + layer.id + '"]')
-        if (el) el.classList.remove('gui-hover')
-        this.hovering = ''
+        let el = document.getElementsByTagName('iframe')[0]
+        if (el) {
+          el = el.contentDocument.querySelector('[data-gid="' + layer.id + '"]')
+          if (el) el.classList.remove('gui-hover')
+          this.hovering = ''
+        }
       }
     }
   }
