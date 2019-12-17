@@ -26,6 +26,7 @@
     >
       <playground style="height: 100%" v-if="win.id === 'playground'" />
       <console v-else-if="win.id === 'console'" />
+      <layers v-else-if="win.id === 'layers'" />
       <span
         v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
@@ -35,16 +36,18 @@
   </div>
 </template>
 <script>
+import Window from '@/components/Window'
 import Playground from '@/components/Playground'
 import Console from '@/components/Console'
-import Window from '@/components/Window'
+import Layers from '@/components/Layers'
 export default {
   name: 'shell',
   props: ['windows', 'res', 'mov', 'child'],
   components: {
     Window,
     Playground,
-    Console
+    Console,
+    Layers
   },
   data() {
     return {

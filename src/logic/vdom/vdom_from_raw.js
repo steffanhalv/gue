@@ -98,11 +98,11 @@ export default (raw = '') => {
   let appendChildren = nodes => {
     let arr1 = []
     let arr2 = []
-    let start = ''
+    let start = []
     nodes.forEach(node => {
-      if (!start) {
+      if (!start.length) {
         if (node.tag && node.children && !node.end) {
-          start = node.text
+          start.push(node.text)
         } else {
           arr1.push({
             tag: node.tag,
@@ -112,6 +112,9 @@ export default (raw = '') => {
           })
         }
       } else if (!node.tag || !node.end || (node.children && !node.end)) {
+        if (node.tag && node.children && !node.end) {
+          start.push(node.text)
+        }
         arr2.push(node)
       } else {
         let match = node.text
@@ -119,17 +122,21 @@ export default (raw = '') => {
           .replace('>', '')
           .replace(/ /g, '')
         if (
-          start.indexOf(match + ' ') === 0 ||
-          start.indexOf(match + '>') === 0
+          start[start.length - 1].indexOf(match + ' ') === 0 ||
+          start[start.length - 1].indexOf(match + '>') === 0
         ) {
-          arr1.push({
-            tag: true,
-            start: start,
-            children: appendChildren(arr2),
-            end: node.text
-          })
-          start = ''
-          arr2 = []
+          if (start.length === 1) {
+            arr1.push({
+              tag: true,
+              start: start[0],
+              children: appendChildren(arr2),
+              end: node.text
+            })
+            arr2 = []
+          } else {
+            arr2.push(node)
+          }
+          start.pop()
         } else {
           arr2.push(node)
         }

@@ -463,9 +463,9 @@ export default {
 .container {
   position: absolute;
   top: 31px;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .header {
   position: absolute;
@@ -485,14 +485,13 @@ export default {
 }
 .new_win,
 .remove {
-  border-radius: 50%;
+  border-radius: 2px;
   position: absolute;
-  margin: 3px;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   color: #555;
   border: none;
-  background-color: #222;
+  background-color: transparent;
   padding: 0;
   font-weight: bold;
   font-size: 0.6em;
