@@ -38,6 +38,10 @@
           @mouseleave="
             leave(layer), count ? $emit('hover', '') : (hovering = '')
           "
+          :class="{
+            current: current.toString() === layer.id.toString(),
+            next: next.toString() === layer.id.toString()
+          }"
           :style="'padding-left:' + (20 * (count || 0) + 30) + 'px'"
           >{{ tagName(layer) }}</label
         >
@@ -45,6 +49,8 @@
           v-if="layer.children.length"
           @hover="count ? $emit('hover', $event) : (hovering = $event)"
           @select="count ? $emit('select', $event) : (selected = $event)"
+          :current="current"
+          :next="next"
           :children="layer.children"
           :count="count ? count + 1 : 1"
         />
@@ -57,7 +63,7 @@
 import vdom from '@/logic/vdom/index'
 export default {
   name: 'layers',
-  props: ['children', 'count'],
+  props: ['children', 'count', 'current', 'next'],
   data() {
     return {
       hovering: '',
@@ -73,7 +79,15 @@ export default {
       }
     },
     selected() {
-      if (!this.count) this.$emit('selected', this.selected)
+      if (!this.count) {
+        this.$emit('selected', this.selected)
+        let el = document.getElementsByTagName('iframe')[0].contentDocument
+        el.querySelectorAll('[data-gid]').forEach(it => {
+          it.classList.remove('gui-selected')
+        })
+        el = el.querySelector('[data-gid="' + this.selected + '"]')
+        if (el) el.classList.add('gui-selected')
+      }
     },
     hovering() {
       if (!this.count) this.$emit('hovering', this.hovering)
@@ -94,6 +108,9 @@ export default {
         .gui-hover {
           background: rgba(0, 0, 0, 0.1)
         }
+        .gui-selected {
+          background: rgba(0, 0, 0, 0.05)
+        }
       `
       let el = document.getElementsByTagName('iframe')[0].contentDocument
       let head = el.head
@@ -106,7 +123,6 @@ export default {
           event.preventDefault()
           event.stopPropagation()
           this.selected = item.dataset.gid
-          console.log('clicked', item.dataset.gid, event)
         })
         item.addEventListener('mouseenter', () => {
           el.querySelectorAll('[data-gid]').forEach(it => {
@@ -212,7 +228,11 @@ label {
   border-bottom: 2px solid #505050;
   cursor: pointer;
 }
-label:hover {
+label.current {
+  background-color: #444;
+}
+label:hover,
+label.next {
   background-color: #444;
 }
 .eye {
