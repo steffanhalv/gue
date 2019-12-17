@@ -6,7 +6,14 @@
     <div class="layers" :class="count ? '' : 'container'">
       <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
         <div
-          :class="layer.visible ? (!layer.tag || (tagName(layer).toLowerCase() === 'template') ? 'text' : 'visible') : 'hidden'"
+          :class="
+            layer.visible
+              ? !layer.tag ||
+                (tagName(layer).toLowerCase() === 'template' && !count)
+                ? 'text'
+                : 'visible'
+              : 'hidden'
+          "
           class="eye"
           @mouseover="hover(layer)"
           @mouseleave="leave(layer)"
@@ -39,7 +46,7 @@ export default {
     }
   },
   watch: {
-    '$server.load' (percentage) {
+    '$server.load'(percentage) {
       if (!this.count && percentage === 100) {
         setTimeout(() => {
           this.addStyle()
