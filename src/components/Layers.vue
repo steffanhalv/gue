@@ -3,6 +3,9 @@
     <button v-if="!count" @click="$vdom.load()">
       Reload
     </button>
+    <button v-if="!count" @click="$vdom.unload()">
+      Unload
+    </button>
     <div class="layers" :class="count ? '' : 'container'">
       <div class="layer" :key="'lr-' + i" v-for="(layer, i) in layers">
         <div
@@ -119,10 +122,8 @@ export default {
 
 <style scoped>
 button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  float: left;
+  width: 50%;
   border: none;
   background: #444;
   color: #ccc;
