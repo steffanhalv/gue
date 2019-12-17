@@ -33,10 +33,12 @@
         :next="hovering"
         v-else-if="win.id === 'layers'"
       />
-      <styles v-else-if="win.id === 'styles'" :selected="selected" />
+      <elem v-else-if="win.id === 'element'" :selected="selected" />
       <assets v-else-if="win.id === 'assets'" />
       <router v-else-if="win.id === 'router'" />
       <tools v-else-if="win.id === 'tools'" />
+      <elements v-else-if="win.id === 'elements'" />
+      <scripts v-else-if="win.id === 'scripts'" />
       <span
         v-else
         style="display: inline-block; padding: 20px; color: #999; font-size: .9em"
@@ -50,10 +52,12 @@ import Window from '@/components/Window'
 import Playground from '@/components/Playground'
 import Console from '@/components/Console'
 import Layers from '@/components/Layers'
-import Styles from '@/components/Styles'
+import Elem from '@/components/Element'
 import Assets from '@/components/Assets'
 import Router from '@/components/Router'
 import Tools from '@/components/Tools'
+import Elements from '@/components/Elements'
+import Scripts from '@/components/Scripts'
 export default {
   name: 'shell',
   props: ['windows', 'res', 'mov', 'child'],
@@ -62,10 +66,12 @@ export default {
     Playground,
     Console,
     Layers,
-    Styles,
+    Elem,
     Assets,
     Router,
-    Tools
+    Tools,
+    Elements,
+    Scripts
   },
   data() {
     return {

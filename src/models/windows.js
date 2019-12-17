@@ -24,24 +24,34 @@ export default [
     height: '',
     pos: {
       top: 0,
-      right: '300px',
+      right: '#element',
       bottom: '#console',
       left: '#tools'
     },
     hooks: {
       top: '',
-      right: ['#styles', '#layers'],
+      right: ['#element', '#layers'],
       bottom: ['#console', '#assets', '#router'],
       left: '#tools'
     }
   },
-  // Styles
+  // Element
   {
-    id: 'styles',
+    id: 'element',
     width: '',
-    height: '',
-    pos: { top: 0, right: 0, bottom: '#layers', left: '#playground' },
-    hooks: { top: '', right: '', bottom: '#layers', left: '#playground' }
+    height: '300px',
+    pos: {
+      top: 0,
+      right: '#elements',
+      bottom: '#scripts',
+      left: 'calc(100% - 600px)'
+    },
+    hooks: {
+      top: '',
+      right: '#elements',
+      bottom: ['#layers', '#scripts'],
+      left: '#playground'
+    }
   },
   // Layers
   {
@@ -49,16 +59,42 @@ export default [
     width: '',
     height: '',
     pos: {
-      top: 'calc(100% - 500px)',
-      right: 0,
+      top: '#element',
+      right: '#scripts',
       bottom: 0,
       left: '#playground'
     },
     hooks: {
-      top: 'calc(100% - 300px)',
-      right: '',
+      top: ['#elements', '#element'],
+      right: '#scripts',
       bottom: '',
       left: ['#playground', '#console']
+    }
+  },
+  // Elements
+  {
+    id: 'elements',
+    width: '',
+    height: '',
+    pos: { top: 0, right: 0, bottom: '#scripts', left: 'calc(100% - 300px)' },
+    hooks: { top: '', right: '', bottom: '#scripts', left: '#element' }
+  },
+  // Scripts
+  {
+    id: 'scripts',
+    width: '',
+    height: '',
+    pos: {
+      top: 'calc(100% - 500px)',
+      right: 0,
+      bottom: 0,
+      left: 'calc(100% - 300px)'
+    },
+    hooks: {
+      top: ['#elements', '#element'],
+      right: '',
+      bottom: '',
+      left: '#layers'
     }
   },
   // console
@@ -105,7 +141,7 @@ export default [
     pos: { top: '#playground', right: '#layers', bottom: 0, left: '#assets' },
     hooks: {
       top: ['#tools', '#playground', '#playground', '#layers'],
-      right: ['#layers', '#styles'],
+      right: ['#layers', '#element'],
       bottom: '',
       left: '#assets'
     }

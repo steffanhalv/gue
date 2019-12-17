@@ -3,6 +3,9 @@
     <button v-if="selected" @click="add">Make red</button>
     <button v-if="selected" @click="remove">Remove style</button>
     {{ selected }}
+    <h4>Element</h4>
+    <h4>Scope</h4>
+    <h4>Global</h4>
   </div>
 </template>
 
